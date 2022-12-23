@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "fast-api-template"
+version = "0.1.0"
+description = "\"app description\""
+authors = ["Michal99Zajac <michal.99.zajac@gmail.com>"]
+readme = "README.md"
+packages = [{include = "fast_api_template"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.88.0"
+uvicorn = {extras = ["standard"], version = "^0.20.0"}
+pydantic = "^1.10.2"
+sqlalchemy = "^1.4.45"
+black = "^22.12.0"
+alembic = "^1.9.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
