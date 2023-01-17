@@ -2,10 +2,24 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
-class ParkingModel(BaseModel):
+class BaseParkingSchema(BaseModel):
+    name: str
+
+
+class CreateParkingSchema(BaseParkingSchema):
+    pass
+
+
+class UpdateParkingSchema(BaseParkingSchema):
+    pass
+
+
+class ParkingInDBSchema(BaseParkingSchema):
     id: UUID
-    name: str
+
+    class Config:
+        orm_mode = True
 
 
-class CreateParkingModel(BaseModel):
-    name: str
+class ParkingSchema(ParkingInDBSchema):
+    pass

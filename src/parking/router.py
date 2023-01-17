@@ -1,26 +1,50 @@
 from uuid import uuid4
 from fastapi import APIRouter, status, Depends, HTTPException
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from db.dependencies import get_db
-from parking.schemas import CreateParkingModel
+from parking.crud import get_parking_by_id
+from parking.schemas import CreateParkingSchema, UpdateParkingSchema, ParkingSchema
 from parking.models import Parking
 
 router = APIRouter()
 
 
-@router.get("/", description="get all parkings", status_code=status.HTTP_200_OK)
-async def get_parkings(db: Session = Depends(get_db)):
+@router.get(
+    "/",
+    description="get all parkings",
+    status_code=status.HTTP_200_OK,
+    response_model=list[ParkingSchema],
+)
+async def get_parkings(db: Session = Depends(get_db)) -> list[ParkingSchema]:
     return db.query(Parking).all()
+
+
+@router.get(
+    "/{id}",
+    description="get parking by id",
+    status_code=status.HTTP_200_OK,
+    response_model=ParkingSchema,
+)
+async def get_parking(id: str, db: Session = Depends(get_db)):
+    db_parking = get_parking_by_id(db, id)
+
+    # check if parking exists
+    if not db_parking:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Parking not found"
+        )
+
+    return db_parking
 
 
 @router.post(
     "/",
     description="create new parking",
     status_code=status.HTTP_201_CREATED,
+    response_model=str,
 )
-async def create_parking(parking: CreateParkingModel, db: Session = Depends(get_db)):
+async def create_parking(parking: CreateParkingSchema, db: Session = Depends(get_db)):
     db_parking = Parking(name=parking.name, id=str(uuid4()))
     db.add(db_parking)
     db.commit()
@@ -45,12 +69,17 @@ async def delete_parking(id: str, db: Session = Depends(get_db)):
     return "Parking has been deleted"
 
 
-@router.put("/{id}", description="Update parking", status_code=status.HTTP_200_OK)
+@router.put(
+    "/{id}",
+    description="Update parking",
+    status_code=status.HTTP_200_OK,
+    response_model=ParkingSchema,
+)
 async def update_parking(
-    id: str, updated_parking: CreateParkingModel, db: Session = Depends(get_db)
+    id: str, updated_parking: UpdateParkingSchema, db: Session = Depends(get_db)
 ):
     # get parking to update
-    db_parking: Parking = db.get(Parking, {"id": id})
+    db_parking = get_parking_by_id(db, id)
 
     if not db_parking:
         raise HTTPException(
@@ -59,4 +88,4 @@ async def update_parking(
 
     db_parking.name = updated_parking.name
     db.commit()
-    return "Parking's updated"
+    return db_parking
