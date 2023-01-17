@@ -1,40 +1,62 @@
-from fastapi import APIRouter, status
+from uuid import uuid4
+from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi.encoders import jsonable_encoder
+from sqlalchemy.orm import Session
 
-from parking.schemas import ParkingModel
+from db.dependencies import get_db
+from parking.schemas import CreateParkingModel
+from parking.models import Parking
 
-from .data import parkings
-
-router = APIRouter(prefix="/parking", tags=["parking"])
+router = APIRouter()
 
 
-@router.get(
-    "/",
-    description="get all parkings",
-)
-def get_parkings():
-    return parkings
+@router.get("/", description="get all parkings", status_code=status.HTTP_200_OK)
+async def get_parkings(db: Session = Depends(get_db)):
+    return db.query(Parking).all()
 
 
 @router.post(
     "/",
     description="create new parking",
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
 )
-def create_parking(parking: ParkingModel):
-    parkings.append(parking)
+async def create_parking(parking: CreateParkingModel, db: Session = Depends(get_db)):
+    db_parking = Parking(name=parking.name, id=str(uuid4()))
+    db.add(db_parking)
+    db.commit()
     return "Parking has been created"
 
 
-@router.delete("/{id}", description="Delete parking", status_code=200)
-def delete_parking(id: int):
-    global parkings
-    parkings = [parking for parking in parkings if parking.id != id]
+@router.delete("/{id}", description="Delete parking", status_code=status.HTTP_200_OK)
+async def delete_parking(id: str, db: Session = Depends(get_db)):
+    # get parking to delete
+    db_parking = db.get(Parking, {"id": id})
+
+    # check if parking exists
+    if not db_parking:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Parking not found"
+        )
+
+    # delete parking
+    db.delete(db_parking)
+    db.commit()
+
     return "Parking has been deleted"
 
 
-@router.put("/{id}", description="Update parking", status_code=200)
-def update_parking(id: int, updated_parking: ParkingModel):
-    global parkings
-    index = [parking.id for parking in parkings].index(id)
-    parkings[index] = updated_parking
-    return parkings[index]
+@router.put("/{id}", description="Update parking", status_code=status.HTTP_200_OK)
+async def update_parking(
+    id: str, updated_parking: CreateParkingModel, db: Session = Depends(get_db)
+):
+    # get parking to update
+    db_parking: Parking = db.get(Parking, {"id": id})
+
+    if not db_parking:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Parking not found"
+        )
+
+    db_parking.name = updated_parking.name
+    db.commit()
+    return "Parking's updated"

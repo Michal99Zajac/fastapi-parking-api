@@ -1,9 +1,11 @@
-from uuid import UUID, uuid4
-from pydantic import BaseModel, Field
+from uuid import UUID
+from pydantic import BaseModel
 
 
 class ParkingModel(BaseModel):
-    id: UUID = Field(description="Parking ID", default_factory=uuid4)
-    name: str = Field("", description="Parking name")
-    address: str = Field("", description="Parking address")
-    owner: str = Field("", description="Parking administrator")
+    id: UUID
+    name: str
+
+
+class CreateParkingModel(BaseModel):
+    name: str
