@@ -4,7 +4,10 @@ version = "0.1.0"
 description = "\"API for booking parking\""
 authors = ["Michal99Zajac <michal.99.zajac@gmail.com>"]
 readme = "README.md"
-packages = [{include = "cli.py"}, {include = "src"}, {include = "alembic"}]
+packages = [{include = "cli.py"}, {include = "src"}, {include = "migrations"}]
+exclude = [
+  { path = "src/db/alembic" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -16,7 +19,7 @@ alembic = "^1.9.0"
 typer = {extras = ["all"], version = "^0.7.0"}
 
 [tool.poetry.scripts]
-app = "cli:run"
+app = "cli:app"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.12.0"
