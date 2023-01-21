@@ -50,6 +50,12 @@ def run_migrate():
     os.system(command)
 
 
+@app.command(name="immigrate", help="undo last migration", add_help_option=True)
+def run_migrate_back():
+    command = "alembic downgrade -1"
+    os.system(command)
+
+
 @app.command(
     name="createsuperuser", help="create super user in database", add_help_option=True
 )
