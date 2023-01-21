@@ -1,7 +1,7 @@
 """initialize_database
 
 Revision ID: 570dbee4a7b9
-Revises: 
+Revises:
 Create Date: 2023-01-19 22:55:25.205041
 
 """
