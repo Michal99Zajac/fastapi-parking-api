@@ -1,7 +1,8 @@
-from sqlalchemy.orm import Session
 from uuid import uuid4
 
-from .models import User, Role
+from sqlalchemy.orm import Session
+
+from .models import Role, User
 from .schemas import CreateUserModel
 
 

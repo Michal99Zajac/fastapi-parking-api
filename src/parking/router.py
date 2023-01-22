@@ -1,11 +1,12 @@
 from uuid import uuid4
-from fastapi import APIRouter, status, Depends, HTTPException
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from db.dependencies import get_db
 from parking.crud import get_parking_by_id
-from parking.schemas import CreateParkingSchema, UpdateParkingSchema, ParkingSchema
 from parking.models import Parking
+from parking.schemas import CreateParkingSchema, ParkingSchema, UpdateParkingSchema
 
 router = APIRouter()
 
@@ -31,9 +32,7 @@ async def get_parking(id: str, db: Session = Depends(get_db)):
 
     # check if parking exists
     if not db_parking:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Parking not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Parking not found")
 
     return db_parking
 
@@ -58,9 +57,7 @@ async def delete_parking(id: str, db: Session = Depends(get_db)):
 
     # check if parking exists
     if not db_parking:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Parking not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Parking not found")
 
     # delete parking
     db.delete(db_parking)
@@ -82,9 +79,7 @@ async def update_parking(
     db_parking = get_parking_by_id(db, id)
 
     if not db_parking:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Parking not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Parking not found")
 
     db_parking.name = updated_parking.name
     db.commit()

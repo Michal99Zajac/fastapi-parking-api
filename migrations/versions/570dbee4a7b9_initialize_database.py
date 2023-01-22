@@ -6,9 +6,9 @@ Create Date: 2023-01-19 22:55:25.205041
 
 """
 import uuid
-from alembic import op
-import sqlalchemy as sa
 
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "570dbee4a7b9"
@@ -83,9 +83,7 @@ def upgrade() -> None:
     roles_permissions = []
     for role in roles:
         for permission in permissions:
-            roles_permissions.append(
-                {"role_id": role["id"], "permission_id": permission["id"]}
-            )
+            roles_permissions.append({"role_id": role["id"], "permission_id": permission["id"]})
 
     op.bulk_insert(permissions_table, permissions)
     op.bulk_insert(roles_table, roles)

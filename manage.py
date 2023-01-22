@@ -3,11 +3,11 @@ import sys
 # run script from the src directory
 sys.path.append("src")
 
-# imports
+import os
+from typing import Optional
+
 import typer
 import uvicorn
-from typing import Optional
-import os
 
 # init typer
 app = typer.Typer()
@@ -56,9 +56,7 @@ def run_migrate_back():
     os.system(command)
 
 
-@app.command(
-    name="createsuperuser", help="create super user in database", add_help_option=True
-)
+@app.command(name="createsuperuser", help="create super user in database", add_help_option=True)
 def create_super_user(
     email: Optional[str] = typer.Option(
         "admin@example.com", help="admin email / login name", prompt=True

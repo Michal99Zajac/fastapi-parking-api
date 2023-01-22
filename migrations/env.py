@@ -1,13 +1,13 @@
-import sys
 import os
+import sys
 
 # set src as the root
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 # import with all models
 from db.alembic import Base
@@ -68,9 +68,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata, compare_type=True
-        )
+        context.configure(connection=connection, target_metadata=target_metadata, compare_type=True)
 
         with context.begin_transaction():
             context.run_migrations()

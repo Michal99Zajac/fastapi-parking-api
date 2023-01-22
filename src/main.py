@@ -1,10 +1,10 @@
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from db.dependencies import get_db
-from user.models import Role
 from parking.router import router as parking_router
+from user.models import Role
 from user.router import router as user_router
 
 app = FastAPI()
