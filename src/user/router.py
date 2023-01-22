@@ -2,9 +2,10 @@ from fastapi import APIRouter, status, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from auth.schemas import UserModel, CreateUserModel
 from db.dependencies import get_db
-from auth import crud
+import user.crud as crud
+
+from .schemas import UserModel, CreateUserModel
 
 router = APIRouter()
 

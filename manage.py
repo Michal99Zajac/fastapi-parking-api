@@ -71,7 +71,7 @@ def create_super_user(
     ),
 ):
     from db.session import SessionLocal
-    from auth.models import Role, User
+    from user.models import Role, User
 
     try:
         # create session
