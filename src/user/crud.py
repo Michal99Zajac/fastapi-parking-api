@@ -1,28 +1,26 @@
-from uuid import uuid4
-
 from sqlalchemy.orm import Session
 
+from crud import FullCRUD
+
 from .models import Role, User
-from .schemas import CreateUserModel
+from .schemas import CreateUserSchema, UpdateUserSchema
 
 
-def get_users(db: Session):
-    return db.query(User).all()
+class UserCRUD(FullCRUD[User, CreateUserSchema, UpdateUserSchema]):
+    def create(self, db: Session, *, obj_in: CreateUserSchema) -> User:
+        user_role = db.query(Role).filter(Role.name == "user").first()
+
+        # check if role exists
+        if not user_role:
+            raise Exception("[UserCRUD] Error: role doesn't exist")
+
+        # create user instance
+        new_user = self.model(email=obj_in.email, password=obj_in.password, roles=[user_role])
+
+        # add to the database
+        db.add(new_user)
+        db.commit()
+        return new_user
 
 
-def get_user_by_id(db: Session, id: str):
-    return db.query(User).filter(User.id == id).first()
-
-
-def create_user(db: Session, user: CreateUserModel):
-    db_user_role = db.query(Role).filter(Role.name == "user").first()
-
-    if not db_user_role:
-        raise Exception("Role doesn't exist")
-
-    id = str(uuid4())
-    db_user = User(
-        email=user.email, password=user.password, roles=[db_user_role], id=id
-    )
-    db.add(db_user)
-    db.commit()
+user_crud = UserCRUD(User)

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from sqlalchemy import Column, ForeignKey, String, Table
 from sqlalchemy.orm import relationship
 
@@ -27,7 +29,7 @@ class User(Base):
     password = Column(String(255), nullable=False)
 
     # relationships
-    roles = relationship(
+    roles: list[Role] = relationship(
         "Role", secondary=users_roles, back_populates="users", cascade="all, delete"
     )
 
@@ -40,12 +42,12 @@ class Role(Base):
     description = Column(String(255))
 
     # relationships
-    users = relationship(
+    users: list[User] = relationship(
         "User",
         secondary=users_roles,
         back_populates="roles",
     )
-    permissions = relationship(
+    permissions: list[Permission] = relationship(
         "Permission", secondary=roles_permissions, back_populates="roles"
     )
 
@@ -58,6 +60,6 @@ class Permission(Base):
     description = Column(String(1000))
 
     # relationships
-    roles = relationship(
+    roles: list[Role] = relationship(
         "Role", secondary=roles_permissions, back_populates="permissions"
     )

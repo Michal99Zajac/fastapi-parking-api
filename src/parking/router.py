@@ -4,9 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from db.dependencies import get_db
-from parking.crud import get_parking_by_id
 from parking.models import Parking
 from parking.schemas import CreateParkingSchema, ParkingSchema, UpdateParkingSchema
+
+from .crud import get_parking_by_id
 
 router = APIRouter()
 

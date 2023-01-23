@@ -1,24 +1,24 @@
 from pydantic import UUID4, BaseModel, EmailStr
 
 
-class BaseUserModel(BaseModel):
+class BaseUserSchema(BaseModel):
     email: EmailStr
 
 
-class CreateUserModel(BaseUserModel):
+class CreateUserSchema(BaseUserSchema):
     password: str
 
 
-class UpdateUserModel(BaseUserModel):
+class UpdateUserSchema(BaseUserSchema):
     password: str
 
 
-class UserInDBModel(BaseUserModel):
+class BaseUserDB(BaseUserSchema):
     id: UUID4
 
     class Config:
         orm_mode = True
 
 
-class UserModel(UserInDBModel):
+class UserSchema(BaseUserDB):
     pass
