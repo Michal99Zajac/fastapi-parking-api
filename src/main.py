@@ -2,6 +2,7 @@ from fastapi import Depends, FastAPI
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
+from auth.router import router as auth_router
 from db.dependencies import get_db
 from parking.router import router as parking_router
 from user.models import Role
@@ -11,6 +12,7 @@ app = FastAPI()
 
 app.include_router(parking_router, prefix="/parkings", tags=["Parking"])
 app.include_router(user_router, prefix="/users", tags=["User"])
+app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 
 
 @app.get("/")

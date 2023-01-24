@@ -2,9 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from auth.dependencies import get_current_user
 from db.dependencies import get_db
 
 from .crud import user_crud
+from .models import User
 from .schemas import CreateUserSchema, UserSchema
 
 router = APIRouter()
@@ -56,7 +58,9 @@ async def get_user(user_id: str, db: Session = Depends(get_db)):
     description="get user permissions",
     status_code=status.HTTP_200_OK,
 )
-async def get_user_permissions(user_id: str, db: Session = Depends(get_db)):
+async def get_user_permissions(
+    user_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
     db_user = user_crud.get(db, user_id)
 
     # check if user exists

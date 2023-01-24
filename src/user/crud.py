@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from auth.cryptography import hash_password
 from crud import FullCRUD
 
 from .models import Role, User
@@ -14,13 +15,33 @@ class UserCRUD(FullCRUD[User, CreateUserSchema, UpdateUserSchema]):
         if not user_role:
             raise Exception("[UserCRUD] Error: role doesn't exist")
 
+        # hash password
+        hashed_password = hash_password(obj_in.password)
+
         # create user instance
-        new_user = self.model(email=obj_in.email, password=obj_in.password, roles=[user_role])
+        new_user = self.model(email=obj_in.email, password=hashed_password, roles=[user_role])
 
         # add to the database
         db.add(new_user)
         db.commit()
         return new_user
+
+    def create_admin(self, db: Session, *, obj_in: CreateUserSchema) -> User:
+        all_roles = db.query(Role).all()
+
+        # hash password
+        hashed_password = hash_password(obj_in.password)
+
+        # create user instance
+        new_admin = self.model(email=obj_in.email, password=hashed_password, roles=all_roles)
+
+        # add to the database
+        db.add(new_admin)
+        db.commit()
+        return new_admin
+
+    def get_by_email(self, db: Session, *, email: str) -> User:
+        return db.query(self.model).filter(self.model.email == email).first()
 
 
 user_crud = UserCRUD(User)

@@ -69,26 +69,19 @@ def create_super_user(
     ),
 ):
     from db.session import SessionLocal
-    from user.models import Role, User
+    from user.crud import user_crud
+    from user.schemas import CreateUserSchema
 
     try:
         # create session
         session = SessionLocal()
 
-        # find admin role
-        role_admin = session.query(Role).filter(Role.name == "admin").first()
+        # create admin model
+        admin_schema = CreateUserSchema(email=email, password=password)
 
-        # check if admin role exists
-        if not role_admin:
-            raise Exception("role admin doesn't exist")
-
-        # create super user instance
-        super_user = User(email=email, password=password, roles=[role_admin])
-
-        # add super user to the db
+        # insert admin into database
         try:
-            session.add(super_user)
-            session.commit()
+            user_crud.create_admin(session, obj_in=admin_schema)
         except Exception:
             raise Exception("super user with these parameters already exists")
     except Exception as e:
