@@ -15,3 +15,10 @@ def invalid_credentials_exception():
         detail="Incorrect username or password",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+
+def forbidden_exception():
+    return HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="User doesn't have required permissions",
+    )

@@ -6,9 +6,9 @@ from sqlalchemy.orm import Session
 from db.dependencies import get_db
 from settings import SECRET_KEY
 from user.crud import user_crud
-from user.models import User
+from user.models import Role, User
 
-from .exceptions import unauthhorized_exception
+from .exceptions import forbidden_exception, unauthhorized_exception
 from .schemas import TokenData
 from .settings import HASH_ALGORITHM
 
@@ -38,5 +38,16 @@ async def get_current_user(
     # user doesn't exist
     if user is None:
         raise unauthhorized_exception()
+
+    return user
+
+
+async def can_use_app(user: User = Depends(get_current_user)):
+    roles: list[Role] = user.roles
+
+    roles_names = map(lambda role: role.name, roles)
+
+    if not "user" in roles_names:
+        raise forbidden_exception()
 
     return user

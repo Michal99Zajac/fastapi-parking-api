@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from auth.dependencies import get_current_user
+from auth.dependencies import can_use_app
 from db.dependencies import get_db
 
 from .crud import user_crud
@@ -37,7 +37,7 @@ async def create_user(create_user: CreateUserSchema, db: Session = Depends(get_d
 
 
 @router.get(
-    "/{user_id}",
+    "/{user_id}/",
     response_model=UserSchema,
     description="get user by id",
     status_code=status.HTTP_200_OK,
@@ -53,14 +53,13 @@ async def get_user(user_id: str, db: Session = Depends(get_db)):
 
 
 @router.get(
-    "/{user_id}/permissions",
+    "/{user_id}/permissions/",
     response_model=list[str],
+    dependencies=[Depends(can_use_app)],
     description="get user permissions",
     status_code=status.HTTP_200_OK,
 )
-async def get_user_permissions(
-    user_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
-):
+async def get_user_permissions(user_id: str, db: Session = Depends(get_db)):
     db_user = user_crud.get(db, user_id)
 
     # check if user exists
@@ -78,5 +77,5 @@ async def get_user_permissions(
     for subset in permissions_subsets:
         response.extend(subset)
 
-    # flat the list and remove repetitions
+    # remove repetitions
     return list(set(response))
