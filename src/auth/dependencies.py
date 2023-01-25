@@ -12,7 +12,7 @@ from .exceptions import forbidden_exception, unauthhorized_exception
 from .schemas import TokenData
 from .settings import HASH_ALGORITHM
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token/")
 
 
 async def get_current_user(
@@ -42,12 +42,23 @@ async def get_current_user(
     return user
 
 
-async def can_use_app(user: User = Depends(get_current_user)):
-    roles: list[Role] = user.roles
+async def for_user(user: User = Depends(get_current_user)):
+    # chisel out roles
+    roles_names = map(lambda role: role.name, user.roles)
 
-    roles_names = map(lambda role: role.name, roles)
-
+    # check if user has user role
     if not "user" in roles_names:
+        raise forbidden_exception()
+
+    return user
+
+
+async def only_admin(user: User = Depends(get_current_user)):
+    # chisel out roles
+    roles_names = map(lambda role: role.name, user.roles)
+
+    # check if user has admin role
+    if not "admin" in roles_names:
         raise forbidden_exception()
 
     return user

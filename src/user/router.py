@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from auth.dependencies import can_use_app
+from auth.dependencies import for_user, get_current_user, only_admin
 from db.dependencies import get_db
+from user.tools import pick_out_roles
 
 from .crud import user_crud
 from .models import User
@@ -15,10 +16,11 @@ router = APIRouter()
 @router.get(
     "/",
     response_model=list[UserSchema],
-    description="get all users",
+    dependencies=[Depends(only_admin)],
     status_code=status.HTTP_200_OK,
 )
 async def get_users(db: Session = Depends(get_db)):
+    """Get all users"""
     return user_crud.get_multi(db)
 
 
@@ -29,6 +31,7 @@ async def get_users(db: Session = Depends(get_db)):
     status_code=status.HTTP_201_CREATED,
 )
 async def create_user(create_user: CreateUserSchema, db: Session = Depends(get_db)):
+    """Create new user with hashed password"""
     try:
         user_crud.create(db, obj_in=create_user)
         return "User created"
@@ -37,12 +40,30 @@ async def create_user(create_user: CreateUserSchema, db: Session = Depends(get_d
 
 
 @router.get(
+    "/me/", response_model=UserSchema, status_code=status.HTTP_200_OK, name="Get current user"
+)
+async def get_me(user: User = Depends(get_current_user)):
+    return user
+
+
+@router.get(
+    "/me/permissions/",
+    response_model=list[str],
+    name="Get authenticated user permissions",
+    status_code=status.HTTP_200_OK,
+)
+async def get_user_permissions(user: User = Depends(for_user)):
+    return pick_out_roles(user)
+
+
+@router.get(
     "/{user_id}/",
     response_model=UserSchema,
-    description="get user by id",
+    dependencies=[Depends(only_admin)],
     status_code=status.HTTP_200_OK,
 )
 async def get_user(user_id: str, db: Session = Depends(get_db)):
+    """Get user by id"""
     db_user = user_crud.get(db, user_id)
 
     # check if user exists
@@ -50,32 +71,3 @@ async def get_user(user_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     return db_user
-
-
-@router.get(
-    "/{user_id}/permissions/",
-    response_model=list[str],
-    dependencies=[Depends(can_use_app)],
-    description="get user permissions",
-    status_code=status.HTTP_200_OK,
-)
-async def get_user_permissions(user_id: str, db: Session = Depends(get_db)):
-    db_user = user_crud.get(db, user_id)
-
-    # check if user exists
-    if not db_user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-
-    # get all permissions from roles and extract their names
-    permissions_subsets: list[list[str]] = [
-        map(lambda permission: str(permission.name), role.permissions) for role in db_user.roles
-    ]
-
-    # flat the list of subsets
-    # see: https://stackoverflow.com/a/45323085
-    response: list[str] = []
-    for subset in permissions_subsets:
-        response.extend(subset)
-
-    # remove repetitions
-    return list(set(response))

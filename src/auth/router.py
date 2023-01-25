@@ -15,7 +15,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/token",
+    "/token/",
     response_model=Token,
     description="get authentication token",
     status_code=status.HTTP_200_OK,
