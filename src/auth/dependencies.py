@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from db.dependencies import get_db
 from settings import SECRET_KEY
 from user.crud import user_crud
-from user.models import Role, User
+from user.models import User
+from user.tools import pick_out_permissions
 
 from .exceptions import forbidden_exception, unauthhorized_exception
 from .schemas import TokenData
@@ -42,15 +43,28 @@ async def get_current_user(
     return user
 
 
-async def for_user(user: User = Depends(get_current_user)):
-    # chisel out roles
-    roles_names = map(lambda role: role.name, user.roles)
+def required_permission(permissions: list[str]):
+    """return a dependency with a check of the given permissions
 
-    # check if user has user role
-    if not "user" in roles_names:
-        raise forbidden_exception()
+    Args:
+        permissions (list[str]): required permissions
+    """
 
-    return user
+    async def check_permissions(user: User = Depends(get_current_user)):
+        # pick out the permissions
+        user_permissions = pick_out_permissions(user)
+
+        # check if user has all required permissions
+        allow_to_pass = all([permission in user_permissions for permission in permissions])
+
+        # forbidden if user doesn't have all permissions
+        if not allow_to_pass:
+            raise forbidden_exception()
+
+        # return the user
+        return user
+
+    return check_permissions
 
 
 async def only_admin(user: User = Depends(get_current_user)):

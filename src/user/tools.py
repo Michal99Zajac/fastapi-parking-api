@@ -1,7 +1,7 @@
 from .models import User
 
 
-def pick_out_roles(user: User) -> list[str]:
+def pick_out_permissions(user: User) -> list[str]:
     """Get all user permissions without any repetitions
 
     Args:

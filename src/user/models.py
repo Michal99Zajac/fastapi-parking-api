@@ -4,7 +4,7 @@ from sqlalchemy import Column, ForeignKey, String, Table
 from sqlalchemy.orm import relationship
 
 from db.base import Base
-from db.utils import uuid_column
+from db.tools import uuid_column
 
 users_roles = Table(
     "users_roles",

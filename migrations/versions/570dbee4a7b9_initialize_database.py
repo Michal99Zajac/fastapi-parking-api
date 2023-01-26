@@ -72,21 +72,38 @@ def upgrade() -> None:
     )
     # ### end Alembic commands ###
 
-    permissions = [
-        {"id": str(uuid.uuid4()), "name": "app/use", "description": None},
-    ]
-    roles = [
-        {"id": str(uuid.uuid4()), "name": "user", "description": None},
-        {"id": str(uuid.uuid4()), "name": "admin", "description": None},
+    permissions = {
+        "app:use": {"id": str(uuid.uuid4()), "name": "app:use", "description": None},
+        "me:read": {"id": str(uuid.uuid4()), "name": "me:read", "description": None},
+        "me:update": {"id": str(uuid.uuid4()), "name": "me:update", "description": None},
+        "me:delete": {"id": str(uuid.uuid4()), "name": "me:delete", "description": None},
+        "user:read": {"id": str(uuid.uuid4()), "name": "user:read", "description": None},
+        "user:delete": {"id": str(uuid.uuid4()), "name": "user:delete", "description": None},
+        "user:update": {"id": str(uuid.uuid4()), "name": "user:update", "description": None},
+        "user:create": {"id": str(uuid.uuid4()), "name": "user:create", "description": None},
+    }
+    roles = {
+        "user": {"id": str(uuid.uuid4()), "name": "user", "description": None},
+        "admin": {"id": str(uuid.uuid4()), "name": "admin", "description": None},
+    }
+
+    roles_permissions = [
+        {"role_id": roles["user"]["id"], "permission_id": permissions["app:use"]["id"]},
+        {"role_id": roles["user"]["id"], "permission_id": permissions["me:read"]["id"]},
+        {"role_id": roles["user"]["id"], "permission_id": permissions["me:delete"]["id"]},
+        {"role_id": roles["user"]["id"], "permission_id": permissions["me:update"]["id"]},
     ]
 
-    roles_permissions = []
-    for role in roles:
-        for permission in permissions:
-            roles_permissions.append({"role_id": role["id"], "permission_id": permission["id"]})
+    # add all permissions to admin
+    roles_permissions.extend(
+        [
+            {"role_id": roles["admin"]["id"], "permission_id": permission["id"]}
+            for permission in permissions.values()
+        ]
+    )
 
-    op.bulk_insert(permissions_table, permissions)
-    op.bulk_insert(roles_table, roles)
+    op.bulk_insert(permissions_table, list(permissions.values()))
+    op.bulk_insert(roles_table, list(roles.values()))
     op.bulk_insert(roles_permissions_table, roles_permissions)
 
 

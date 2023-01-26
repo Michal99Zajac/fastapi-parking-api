@@ -9,7 +9,7 @@ from db.dependencies import get_db
 from .exceptions import invalid_credentials_exception
 from .schemas import Token
 from .settings import ACCESS_TOKEN_EXPIRE_MINUTES
-from .utils import authenticate_user, create_access_token
+from .tools import authenticate_user, create_access_token
 
 router = APIRouter()
 

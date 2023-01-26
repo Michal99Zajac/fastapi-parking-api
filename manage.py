@@ -39,7 +39,7 @@ def make_migrations(name: Optional[str] = typer.Option(None, help="revision name
     command = "alembic revision --autogenerate"
 
     if name:
-        command += f'-m "{name}"'
+        command += f' -m "{name}"'
 
     os.system(command)
 
