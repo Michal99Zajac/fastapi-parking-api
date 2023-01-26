@@ -10,7 +10,7 @@ class CreateUserSchema(BaseUserSchema):
 
 
 class UpdateUserSchema(BaseUserSchema):
-    password: str
+    pass
 
 
 class BaseUserDB(BaseUserSchema):

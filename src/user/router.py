@@ -6,19 +6,22 @@ from auth.cryptography import verify_password
 from auth.dependencies import required_permission
 from auth.exceptions import invalid_password_exception
 from db.dependencies import get_db
+from exceptions import not_found_exception
 from user.tools import pick_out_permissions
 
 from .crud import user_crud
 from .models import User
-from .schemas import CreateUserSchema, UserSchema
+from .schemas import CreateUserSchema, UpdateUserSchema, UserSchema
 
 router = APIRouter()
 
 # permissions
 read_me_permission = required_permission(["me:read"])
-read_user_permission = required_permission(["user:read"])
+update_me_permission = required_permission(["me:read", "me:update"])
 delete_me_permission = required_permission(["me:delete", "me:read"])
+read_user_permission = required_permission(["user:read"])
 delete_user_permission = required_permission(["user:read", "user:delete"])
+update_user_permission = required_permission(["user:read", "user:update"])
 
 
 @router.get(
@@ -54,6 +57,20 @@ async def get_me(user: User = Depends(read_me_permission)):
     return user
 
 
+@router.put(
+    "/me/", response_model=UserSchema, status_code=status.HTTP_200_OK, name="Update current user"
+)
+async def update_me(
+    user_in: UpdateUserSchema,
+    db: Session = Depends(get_db),
+    user: User = Depends(update_me_permission),
+):
+    # update user
+    updated_user = user_crud.update(db, db_obj=user, obj_in=user_in)
+
+    return updated_user
+
+
 @router.delete(
     "/me/", response_model=str, status_code=status.HTTP_200_OK, name="Delete current user"
 )
@@ -70,10 +87,6 @@ async def delete_me(
     # delete user
     user_crud.delete(db, id=user.id)
     return "user has been deleted"
-
-
-# TODO: add data update for user
-# TODO: add update for admin
 
 
 @router.get(
@@ -104,12 +117,36 @@ async def get_user(user_id: str, db: Session = Depends(get_db)):
 
 
 @router.delete(
-    "/{user_id}",
+    "/{user_id}/",
     response_model=str,
     dependencies=[Depends(delete_user_permission)],
     status_code=status.HTTP_200_OK,
 )
 async def delete_user(user_id: str, db: Session = Depends(get_db)):
     # delete user
-    user_crud.delete(db, id=user_id)
+    deleted_user = user_crud.delete(db, id=user_id)
+
+    # check if user exists
+    if not deleted_user:
+        raise not_found_exception()
+
     return "user has been deleted"
+
+
+@router.put(
+    "/{user_id}/",
+    response_model=UserSchema,
+    dependencies=[Depends(update_user_permission)],
+    status_code=status.HTTP_200_OK,
+)
+async def update_user(user_id: str, user_in: UpdateUserSchema, db: Session = Depends(get_db)):
+    # find user
+    db_user = user_crud.get(db, user_id)
+
+    if not db_user:
+        raise not_found_exception()
+
+    # update user
+    updated_user = user_crud.update(db, db_obj=db_user, obj_in=user_in)
+
+    return updated_user
