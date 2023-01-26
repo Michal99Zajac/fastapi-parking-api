@@ -2,7 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from auth.cryptography import verify_password
 from auth.dependencies import required_permission
+from auth.exceptions import invalid_password_exception
 from db.dependencies import get_db
 from user.tools import pick_out_permissions
 
@@ -15,6 +17,8 @@ router = APIRouter()
 # permissions
 read_me_permission = required_permission(["me:read"])
 read_user_permission = required_permission(["user:read"])
+delete_me_permission = required_permission(["me:delete", "me:read"])
+delete_user_permission = required_permission(["user:read", "user:delete"])
 
 
 @router.get(
@@ -50,10 +54,26 @@ async def get_me(user: User = Depends(read_me_permission)):
     return user
 
 
+@router.delete(
+    "/me/", response_model=str, status_code=status.HTTP_200_OK, name="Delete current user"
+)
+async def delete_me(
+    password: str, user: User = Depends(delete_me_permission), db: Session = Depends(get_db)
+):
+    # verify password
+    verified = verify_password(password, user.password)
+
+    # forbidden if password is not correct
+    if not verified:
+        raise invalid_password_exception()
+
+    # delete user
+    user_crud.delete(db, id=user.id)
+    return "user has been deleted"
+
+
 # TODO: add data update for user
 # TODO: add update for admin
-# TODO: add remove for user
-# TODO: add remove for admin
 
 
 @router.get(
@@ -81,3 +101,15 @@ async def get_user(user_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     return db_user
+
+
+@router.delete(
+    "/{user_id}",
+    response_model=str,
+    dependencies=[Depends(delete_user_permission)],
+    status_code=status.HTTP_200_OK,
+)
+async def delete_user(user_id: str, db: Session = Depends(get_db)):
+    # delete user
+    user_crud.delete(db, id=user_id)
+    return "user has been deleted"
