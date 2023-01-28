@@ -6,6 +6,7 @@ from auth.cryptography import verify_password
 from auth.dependencies import required_permission
 from auth.exceptions import invalid_password_exception
 from db.dependencies import get_db
+from dependencies import PaginationQuery
 from exceptions import not_found_exception
 from user.tools import pick_out_permissions
 
@@ -30,9 +31,9 @@ update_user_permission = required_permission(["user:read", "user:update"])
     dependencies=[Depends(read_user_permission)],
     status_code=status.HTTP_200_OK,
 )
-async def get_users(db: Session = Depends(get_db)):
+async def get_users(pagination: PaginationQuery = Depends(), db: Session = Depends(get_db)):
     """Get all users"""
-    return user_crud.get_multi(db)
+    return user_crud.get_multi(db, page=pagination.page, limit=pagination.limit)
 
 
 @router.post(
