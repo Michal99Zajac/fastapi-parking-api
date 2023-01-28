@@ -13,21 +13,19 @@ import uvicorn
 app = typer.Typer()
 
 
-@app.command(name="dev", help="run development server", add_help_option=True)
+@app.command(name="runserver", help="run server", add_help_option=True)
 def run_dev_server(
     port: Optional[int] = typer.Option(8000, help="app port number", envvar="PORT"),
     host: Optional[str] = typer.Option("localhost", help="app host", envvar="HOST"),
-):
-    uvicorn.run("main:app", host=host, port=port, log_level="debug", reload=True)
-
-
-@app.command(name="prod", help="run production server", add_help_option=True)
-def run_prod_server(
-    port: Optional[int] = typer.Option(8000, help="app port number", envvar="PORT"),
-    host: Optional[str] = typer.Option("0.0.0.0", help="app host", envvar="HOST"),
     workers: Optional[int] = typer.Option(None, help="multiple worker processes"),
+    dev: Optional[bool] = typer.Option(False, help="run development server"),
 ):
-    uvicorn.run("main:app", host=host, port=port, log_level="info", workers=workers)
+    config = {"host": host, "port": port, "log_level": "info", "workers": workers}
+
+    if dev:
+        config.update({"log_level": "debug", "reload": True, "workers": None})
+
+    uvicorn.run("main:app", **config)
 
 
 @app.command(
@@ -50,7 +48,7 @@ def run_migrate():
     os.system(command)
 
 
-@app.command(name="immigrate", help="undo last migration", add_help_option=True)
+@app.command(name="revert-migration", help="undo last migration", add_help_option=True)
 def run_migrate_back():
     command = "alembic downgrade -1"
     os.system(command)
