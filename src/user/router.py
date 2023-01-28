@@ -90,6 +90,19 @@ async def delete_me(
     return "user has been deleted"
 
 
+@router.patch(
+    "/me/password/",
+    response_model=str,
+    status_code=status.HTTP_200_OK,
+    name="Update current user password",
+)
+async def update_password(
+    password: str, user: User = Depends(update_user_permission), db: Session = Depends(get_db)
+):
+    user_crud.update_password(db, db_obj=user, new_password=password)
+    return "Password has been updated"
+
+
 @router.get(
     "/me/permissions/",
     response_model=list[str],
