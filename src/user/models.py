@@ -48,7 +48,7 @@ class Role(Base):
         back_populates="roles",
     )
     permissions: list[Permission] = relationship(
-        "Permission", secondary=roles_permissions, back_populates="roles"
+        "Permission", secondary=roles_permissions, back_populates="roles", cascade="all, delete"
     )
 
 
@@ -61,5 +61,5 @@ class Permission(Base):
 
     # relationships
     roles: list[Role] = relationship(
-        "Role", secondary=roles_permissions, back_populates="permissions"
+        "Role", secondary=roles_permissions, back_populates="permissions", cascade="all, delete"
     )

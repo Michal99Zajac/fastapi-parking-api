@@ -33,11 +33,17 @@ def run_dev_server(
     help="run autogenerate alembic revisions",
     add_help_option=True,
 )
-def make_migrations(name: Optional[str] = typer.Option(None, help="revision name")):
-    command = "alembic revision --autogenerate"
+def make_migrations(
+    name: Optional[str] = typer.Option(None, help="revision name"),
+    auto_off: Optional[bool] = typer.Option(False, help="turn off --autogenerate option"),
+):
+    command = "alembic revision"
+
+    if not auto_off:
+        command = " ".join([command, "--autogenerate"])
 
     if name:
-        command += f' -m "{name}"'
+        command = " ".join([command, f'-m "{name}"'])
 
     os.system(command)
 
