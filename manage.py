@@ -54,7 +54,7 @@ def run_migrate():
     os.system(command)
 
 
-@app.command(name="revert-migration", help="undo last migration", add_help_option=True)
+@app.command(name="revert", help="undo last migration", add_help_option=True)
 def run_migrate_back():
     command = "alembic downgrade -1"
     os.system(command)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from sqlalchemy import Column, ForeignKey, String, Table
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped
 
 from db.base import Base
 from db.tools import uuid_column
@@ -29,7 +29,7 @@ class User(Base):
     password = Column(String(255), nullable=False)
 
     # relationships
-    roles: list[Role] = relationship(
+    roles: Mapped[list[Role]] = relationship(
         "Role", secondary=users_roles, back_populates="users", cascade="all, delete"
     )
 
@@ -42,12 +42,12 @@ class Role(Base):
     description = Column(String(255))
 
     # relationships
-    users: list[User] = relationship(
+    users: Mapped[list[User]] = relationship(
         "User",
         secondary=users_roles,
         back_populates="roles",
     )
-    permissions: list[Permission] = relationship(
+    permissions: Mapped[list[Permission]] = relationship(
         "Permission", secondary=roles_permissions, back_populates="roles", cascade="all, delete"
     )
 
@@ -60,6 +60,6 @@ class Permission(Base):
     description = Column(String(1000))
 
     # relationships
-    roles: list[Role] = relationship(
+    roles: Mapped[list[Role]] = relationship(
         "Role", secondary=roles_permissions, back_populates="permissions", cascade="all, delete"
     )
