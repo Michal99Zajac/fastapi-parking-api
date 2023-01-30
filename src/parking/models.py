@@ -1,10 +1,21 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.base import Base
+from db.tools import uuid_column
+
+from user.models import User
+from models import Address
 
 
 class Parking(Base):
     __tablename__ = "parkings"
 
-    id = Column(String, primary_key=True, unique=True)
+    id: Mapped[str] = uuid_column()
     name = Column(String, nullable=False)
+    address_id: Mapped[str] = mapped_column(ForeignKey("addresses.id"), nullable=False)
+    owner_id: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)
+
+    # relationships
+    address: Mapped["Address"] = relationship()
+    owner: Mapped["User"] = relationship()
