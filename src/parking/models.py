@@ -14,5 +14,5 @@ class Parking(Base):
     owner_id: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)
 
     # relationships
-    address: Mapped["Address"] = relationship()
-    owner: Mapped["User"] = relationship()
+    address: Mapped["Address"] = relationship()  # type: ignore
+    owner: Mapped["User"] = relationship()  # type: ignore
