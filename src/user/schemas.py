@@ -10,15 +10,15 @@ class CreateUserSchema(BaseUserSchema):
 
 
 class UpdateUserSchema(BaseUserSchema):
-    pass
+    ...
 
 
-class BaseUserDB(BaseUserSchema):
-    id: UUID4
+class BaseUserInDB(BaseUserSchema):
+    id: str
 
     class Config:
         orm_mode = True
 
 
-class UserSchema(BaseUserDB):
-    pass
+class UserSchema(BaseUserInDB):
+    ...

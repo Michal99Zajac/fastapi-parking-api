@@ -1,8 +1,8 @@
 """init database
 
-Revision ID: 79078ab5d369
+Revision ID: 3bb5d9b0d27b
 Revises:
-Create Date: 2023-01-29 10:23:10.827550
+Create Date: 2023-01-31 22:09:38.081492
 
 """
 import uuid
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "79078ab5d369"
+revision = "3bb5d9b0d27b"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -45,16 +45,16 @@ def upgrade() -> None:
     )
     roles_permissions_table = op.create_table(
         "roles_permissions",
-        sa.Column("role_id", sa.String(), nullable=True),
-        sa.Column("permission_id", sa.String(), nullable=True),
+        sa.Column("role_id", sa.String(), nullable=False),
+        sa.Column("permission_id", sa.String(), nullable=False),
         sa.ForeignKeyConstraint(
             ["permission_id"],
             ["permissions.id"],
+            onupdate="CASCADE",
+            ondelete="CASCADE",
         ),
-        sa.ForeignKeyConstraint(
-            ["role_id"],
-            ["roles.id"],
-        ),
+        sa.ForeignKeyConstraint(["role_id"], ["roles.id"], onupdate="CASCADE", ondelete="CASCADE"),
+        sa.PrimaryKeyConstraint("role_id", "permission_id"),
     )
     op.create_table(
         "users_roles",
@@ -64,10 +64,7 @@ def upgrade() -> None:
             ["role_id"],
             ["roles.id"],
         ),
-        sa.ForeignKeyConstraint(
-            ["user_id"],
-            ["users.id"],
-        ),
+        sa.ForeignKeyConstraint(["user_id"], ["users.id"], onupdate="CASCADE", ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("user_id", "role_id"),
     )
     # ### end Alembic commands ###

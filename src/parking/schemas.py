@@ -2,25 +2,65 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from user.schemas import UserSchema
 
-class BaseParkingSchema(BaseModel):
+# PARKING ADDRESS SCHEMA
+
+
+class ParkingAddressBaseSchema(BaseModel):
+    street: str
+    zip_code: str
+    city: str
+    country: str
+
+
+class ParkingAddressCreateSchema(ParkingAddressBaseSchema):
+    ...
+
+
+class ParkingAddressUpdateSchema(ParkingAddressBaseSchema):
+    ...
+
+
+class ParkingAddressInDB(ParkingAddressBaseSchema):
+    id: str
+
+    class Config:
+        orm_mode = True
+
+
+class ParkingAddressSchema(ParkingAddressInDB):
+    ...
+
+
+class ParkingBaseSchema(BaseModel):
+    ...
+
+
+# PARKING SCHEMA
+
+
+class ParkingBaseSchema(BaseModel):
     name: str
+    address: ParkingAddressBaseSchema
 
 
-class CreateParkingSchema(BaseParkingSchema):
-    pass
+class CreateParkingSchema(ParkingBaseSchema):
+    ...
 
 
-class UpdateParkingSchema(BaseParkingSchema):
-    pass
+class UpdateParkingSchema(ParkingBaseSchema):
+    ...
 
 
-class ParkingInDBSchema(BaseParkingSchema):
-    id: UUID
+class ParkingInDBSchema(ParkingBaseSchema):
+    id: str
+    address: ParkingAddressSchema
+    owner: UserSchema
 
     class Config:
         orm_mode = True
 
 
 class ParkingSchema(ParkingInDBSchema):
-    pass
+    ...

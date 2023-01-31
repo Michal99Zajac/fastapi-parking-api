@@ -1,19 +1,18 @@
 """add parking permissions
 
-Revision ID: ce83c838aa1c
-Revises: 79078ab5d369
-Create Date: 2023-01-29 10:32:50.536481
+Revision ID: eb6b4e5f1563
+Revises: 3bb5d9b0d27b
+Create Date: 2023-01-31 22:11:27.992691
 
 """
 from alembic import op
-import sqlalchemy as sa
-from user.models import Role, Permission
-from sqlalchemy import orm, delete
+from sqlalchemy import delete, orm
 
+from user.models import Permission, Role
 
 # revision identifiers, used by Alembic.
-revision = "ce83c838aa1c"
-down_revision = "79078ab5d369"
+revision = "eb6b4e5f1563"
+down_revision = "3bb5d9b0d27b"
 branch_labels = None
 depends_on = None
 

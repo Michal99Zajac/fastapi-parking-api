@@ -9,15 +9,23 @@ from db.tools import uuid_column
 users_roles = Table(
     "users_roles",
     Base.metadata,
-    Column("user_id", ForeignKey("users.id"), primary_key=True),
+    Column(
+        "user_id", ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True
+    ),
     Column("role_id", ForeignKey("roles.id"), primary_key=True),
 )
 
 roles_permissions = Table(
     "roles_permissions",
     Base.metadata,
-    Column("role_id", ForeignKey("roles.id")),
-    Column("permission_id", ForeignKey("permissions.id")),
+    Column(
+        "role_id", ForeignKey("roles.id", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True
+    ),
+    Column(
+        "permission_id",
+        ForeignKey("permissions.id", ondelete="CASCADE", onupdate="CASCADE"),
+        primary_key=True,
+    ),
 )
 
 
@@ -32,7 +40,7 @@ class User(Base):
     roles: Mapped[list[Role]] = relationship(
         "Role", secondary=users_roles, back_populates="users", cascade="all, delete"
     )
-    parkings: Mapped["Parking"] = relationship(cascade="all, delete")  # type: ignore
+    parkings: Mapped[list["Parking"]] = relationship(cascade="all, delete")  # type: ignore
 
 
 class Role(Base):
@@ -49,7 +57,11 @@ class Role(Base):
         back_populates="roles",
     )
     permissions: Mapped[list[Permission]] = relationship(
-        "Permission", secondary=roles_permissions, back_populates="roles", cascade="all, delete"
+        "Permission",
+        secondary=roles_permissions,
+        back_populates="roles",
+        cascade="all, delete",
+        passive_deletes=True,
     )
 
 
@@ -62,5 +74,9 @@ class Permission(Base):
 
     # relationships
     roles: Mapped[list[Role]] = relationship(
-        "Role", secondary=roles_permissions, back_populates="permissions", cascade="all, delete"
+        "Role",
+        secondary=roles_permissions,
+        back_populates="permissions",
+        cascade="all, delete",
+        passive_deletes=True,
     )
