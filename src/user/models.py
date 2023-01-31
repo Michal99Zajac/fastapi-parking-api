@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from sqlalchemy import Column, ForeignKey, String, Table
-from sqlalchemy.orm import relationship, Mapped
+from sqlalchemy.orm import Mapped, relationship
 
 from db.base import Base
 from db.tools import uuid_column
@@ -32,7 +32,7 @@ class User(Base):
     roles: Mapped[list[Role]] = relationship(
         "Role", secondary=users_roles, back_populates="users", cascade="all, delete"
     )
-    parkings: Mapped = relationship("Parking", cascade="all, delete")
+    parkings: Mapped["Parking"] = relationship(cascade="all, delete")
 
 
 class Role(Base):

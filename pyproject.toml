@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "\"API for booking parking\""
 authors = ["Michal99Zajac <michal.99.zajac@gmail.com>"]
 readme = "README.md"
-packages = [{include = "cli.py"}, {include = "src"}, {include = "migrations"}]
+packages = [{include = "manage.py"}, {include = "src"}, {include = "migrations"}]
 exclude = [
   { path = "src/db/alembic" }
 ]
@@ -33,4 +33,3 @@ line-length = 100
 
 [build-system]
 requires = ["poetry-core"]
-build-backend = "cli:main"

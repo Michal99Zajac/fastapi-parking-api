@@ -4,9 +4,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from db.base import Base
 from db.tools import uuid_column
 
-from user.models import User
-from models import Address
-
 
 class Parking(Base):
     __tablename__ = "parkings"

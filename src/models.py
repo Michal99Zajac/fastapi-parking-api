@@ -15,4 +15,4 @@ class Address(Base):
     country = Column(String(100), nullable=False)
 
     # relationships
-    parking: Mapped = relationship("Parking")
+    parking: Mapped["Parking"] = relationship()
