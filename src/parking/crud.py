@@ -9,13 +9,20 @@ from .schemas import CreateParkingSchema, UpdateParkingSchema
 
 
 class ParkingCRUD(CRUD[Parking, CreateParkingSchema, UpdateParkingSchema]):
-    def get_by_owner(self, db: Session, *, owner_id: str, limit: int = 50, page: int = 0):
+    def get_multi_by_owner(self, db: Session, *, owner_id: str, limit: int = 50, page: int = 0):
         return (
             db.query(self.model)
             .filter(self.model.owner_id == owner_id)
             .offset(page * limit)
             .limit(limit)
             .all()
+        )
+
+    def get_by_owner(self, db: Session, *, owner_id: str, parking_id: str):
+        return (
+            db.query(self.model)
+            .filter(self.model.owner_id == owner_id and self.model.id == parking_id)
+            .first()
         )
 
     def create(self, db: Session, *, obj_in: CreateParkingSchema, user: User):

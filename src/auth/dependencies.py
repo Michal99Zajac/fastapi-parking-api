@@ -4,12 +4,13 @@ from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 from db.dependencies import get_db
+from exceptions import forbidden_exception
 from settings import SECRET_KEY
 from user.crud import user_crud
 from user.models import User
 from user.tools import pick_out_permissions
 
-from .exceptions import forbidden_exception, unauthhorized_exception
+from .exceptions import unauthhorized_exception
 from .schemas import TokenData
 from .settings import HASH_ALGORITHM
 
