@@ -40,7 +40,7 @@ class User(Base):
     roles: Mapped[list[Role]] = relationship(
         "Role", secondary=users_roles, back_populates="users", cascade="all, delete"
     )
-    parkings: Mapped[list["Parking"]] = relationship(cascade="all, delete")  # type: ignore
+    parkings: Mapped[list["Parking"]] = relationship("Parking", back_populates="owner", cascade="all, delete")  # type: ignore
 
 
 class Role(Base):

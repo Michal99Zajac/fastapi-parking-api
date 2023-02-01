@@ -15,7 +15,7 @@ class ParkingAddress(Base):
     country = Column(String(100), nullable=False)
 
     # relationships
-    parkings: Mapped[list["Parking"]] = relationship()
+    parkings: Mapped[list["Parking"]] = relationship("Parking", back_populates="address")
 
 
 class Parking(Base):
@@ -29,5 +29,5 @@ class Parking(Base):
     )
 
     # relationships
-    address: Mapped["ParkingAddress"] = relationship()
-    owner: Mapped["User"] = relationship()  # type: ignore
+    address: Mapped["ParkingAddress"] = relationship("ParkingAddress", back_populates="parkings")
+    owner: Mapped["User"] = relationship("User", back_populates="parkings")  # type: ignore

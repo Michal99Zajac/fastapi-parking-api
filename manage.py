@@ -72,6 +72,7 @@ def create_super_user(
         hide_input=True,
     ),
 ):
+    import db.alembic
     from db.session import SessionLocal
     from user.crud import user_crud
     from user.schemas import CreateUserSchema
@@ -84,10 +85,7 @@ def create_super_user(
         admin_schema = CreateUserSchema(email=email, password=password)
 
         # insert admin into database
-        try:
-            user_crud.create_admin(session, obj_in=admin_schema)
-        except Exception:
-            raise Exception("super user with these parameters already exists")
+        user_crud.create_admin(session, obj_in=admin_schema)
     except Exception as e:
         print(f"Operation has failed: {e}")
 

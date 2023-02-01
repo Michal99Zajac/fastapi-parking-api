@@ -1,13 +1,13 @@
 from sqlalchemy.orm import Session
 
 from auth.cryptography import hash_password
-from crud import FullCRUD
+from crud import CRUD
 
 from .models import Role, User
 from .schemas import CreateUserSchema, UpdateUserSchema
 
 
-class UserCRUD(FullCRUD[User, CreateUserSchema, UpdateUserSchema]):
+class UserCRUD(CRUD[User, CreateUserSchema, UpdateUserSchema]):
     def create(self, db: Session, *, obj_in: CreateUserSchema) -> User:
         user_role = db.query(Role).filter(Role.name == "user").first()
 
