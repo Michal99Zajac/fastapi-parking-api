@@ -1,3 +1,5 @@
+from typing import Any, Callable, Coroutine
+
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
@@ -23,7 +25,7 @@ async def get_current_user(
     try:
         # decode token
         payload = jwt.decode(token, SECRET_KEY, algorithms=[HASH_ALGORITHM])
-        id: str = payload.get("sub")
+        id: str | None = payload.get("sub")
 
         # token doesn't have encoded user id
         if id is None:
@@ -44,14 +46,14 @@ async def get_current_user(
     return user
 
 
-def required_permission(permissions: list[str]):
+def required_permission(permissions: list[str]) -> Callable[[User], Coroutine[Any, Any, User]]:
     """return a dependency with a check of the given permissions
 
     Args:
         permissions (list[str]): required permissions
     """
 
-    async def check_permissions(user: User = Depends(get_current_user)):
+    async def check_permissions(user: User = Depends(get_current_user)) -> User:
         # pick out the permissions
         user_permissions = pick_out_permissions(user)
 
@@ -68,12 +70,12 @@ def required_permission(permissions: list[str]):
     return check_permissions
 
 
-async def only_admin(user: User = Depends(get_current_user)):
+async def only_admin(user: User = Depends(get_current_user)) -> User:
     # chisel out roles
     roles_names = map(lambda role: role.name, user.roles)
 
     # check if user has admin role
-    if not "admin" in roles_names:
+    if "admin" not in roles_names:
         raise forbidden_exception()
 
     return user

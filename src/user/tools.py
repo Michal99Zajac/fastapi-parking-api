@@ -12,7 +12,7 @@ def pick_out_permissions(user: User) -> list[str]:
     """
     # get all permissions from roles and extract their names
     permissions_subsets: list[list[str]] = [
-        map(lambda permission: str(permission.name), role.permissions) for role in user.roles
+        list(map(lambda permission: str(permission.name), role.permissions)) for role in user.roles
     ]
 
     # flat the list of subsets

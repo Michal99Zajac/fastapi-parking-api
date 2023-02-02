@@ -54,7 +54,7 @@ class UserCRUD(CRUD[User, CreateUserSchema, UpdateUserSchema]):
         db.commit()
         return new_admin
 
-    def get_by_email(self, db: Session, *, email: str) -> User:
+    def get_by_email(self, db: Session, *, email: str) -> User | None:
         return db.query(self.model).filter(self.model.email == email).first()
 
 

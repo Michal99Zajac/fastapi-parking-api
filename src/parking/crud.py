@@ -9,7 +9,9 @@ from .schemas import CreateParkingSchema, UpdateParkingSchema
 
 
 class ParkingCRUD(CRUD[Parking, CreateParkingSchema, UpdateParkingSchema]):
-    def get_multi_by_owner(self, db: Session, *, owner_id: str, limit: int = 50, page: int = 0):
+    def get_multi_by_owner(
+        self, db: Session, *, owner_id: str, limit: int = 50, page: int = 0
+    ) -> list[Parking]:
         return (
             db.query(self.model)
             .filter(self.model.owner_id == owner_id)
@@ -18,14 +20,14 @@ class ParkingCRUD(CRUD[Parking, CreateParkingSchema, UpdateParkingSchema]):
             .all()
         )
 
-    def get_by_owner(self, db: Session, *, owner_id: str, parking_id: str):
+    def get_by_owner(self, db: Session, *, owner_id: str, parking_id: str) -> Parking | None:
         return (
             db.query(self.model)
             .filter(self.model.owner_id == owner_id and self.model.id == parking_id)
             .first()
         )
 
-    def create(self, db: Session, *, obj_in: CreateParkingSchema, user: User):
+    def create(self, db: Session, *, obj_in: CreateParkingSchema, user: User) -> Parking:
         obj_in_data = jsonable_encoder(obj_in)  # transfer data to dict
 
         # create address model object
@@ -33,7 +35,7 @@ class ParkingCRUD(CRUD[Parking, CreateParkingSchema, UpdateParkingSchema]):
         db_parking_address = ParkingAddress(**address_data)
 
         # create parking
-        db_obj = self.model(**obj_in_data, address=db_parking_address, owner=user)
+        db_obj: Parking = self.model(**obj_in_data, address=db_parking_address, owner=user)
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)

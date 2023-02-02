@@ -31,10 +31,6 @@ class ParkingAddressSchema(ParkingAddressInDB):
     ...
 
 
-class ParkingBaseSchema(BaseModel):
-    ...
-
-
 # PARKING SCHEMA
 
 

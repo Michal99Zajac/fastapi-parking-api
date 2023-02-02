@@ -18,7 +18,7 @@ async def get_all_parkings(
     pagination: PaginationQuery = Depends(),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-):
+) -> list[ParkingSchema]:
     """Get all user parkings"""
     parkings = parking_crud.get_multi_by_owner(
         db, page=pagination.page, limit=pagination.limit, owner_id=current_user.id
@@ -31,7 +31,7 @@ async def create_parking(
     new_parking: CreateParkingSchema,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-):
+) -> str:
     """Create new parking to current user"""
     parking_crud.create(db, obj_in=new_parking, user=current_user)
     return "Parking's been created"
@@ -40,7 +40,7 @@ async def create_parking(
 @router.get("/{parking_id}/", response_model=ParkingSchema, status_code=status.HTTP_200_OK)
 async def get_parking(
     parking_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
-):
+) -> ParkingSchema:
     parking = parking_crud.get_by_owner(db, parking_id=parking_id, owner_id=current_user.id)
 
     if not parking:
@@ -54,7 +54,7 @@ async def get_parking(
 @router.delete("/{parking_id}/", response_model=str, status_code=status.HTTP_200_OK)
 async def delete_parking(
     parking_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
-):
+) -> str:
     # find parking
     parking = parking_crud.get_by_owner(db, parking_id=parking_id, owner_id=current_user.id)
 

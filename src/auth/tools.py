@@ -1,16 +1,18 @@
 from datetime import datetime, timedelta
+from typing import Literal
 
 from jose import jwt
 from sqlalchemy.orm import Session
 
 from settings import SECRET_KEY
 from user.crud import user_crud
+from user.models import User
 
 from .cryptography import verify_password
 from .settings import HASH_ALGORITHM
 
 
-def authenticate_user(db: Session, email: str, password: str):
+def authenticate_user(db: Session, email: str, password: str) -> Literal[False] | User:
     user = user_crud.get_by_email(db, email=email)
 
     # check if user exists
@@ -25,7 +27,7 @@ def authenticate_user(db: Session, email: str, password: str):
     return user
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     # copy data to encode
     to_encode = data.copy()
 

@@ -3,11 +3,11 @@ import sys
 # run script from the src directory
 sys.path.append("src")
 
-import os
-from typing import Optional
+import os  # noqa: E402
+from typing import Any, Optional  # noqa: E402
 
-import typer
-import uvicorn
+import typer  # noqa: E402
+import uvicorn  # noqa: E402
 
 # init typer
 app = typer.Typer()
@@ -15,17 +15,17 @@ app = typer.Typer()
 
 @app.command(name="runserver", help="run server", add_help_option=True)
 def run_dev_server(
-    port: Optional[int] = typer.Option(8000, help="app port number", envvar="PORT"),
-    host: Optional[str] = typer.Option("localhost", help="app host", envvar="HOST"),
+    port: int = typer.Option(8000, help="app port number", envvar="PORT"),
+    host: str = typer.Option("localhost", help="app host", envvar="HOST"),
     workers: Optional[int] = typer.Option(None, help="multiple worker processes"),
-    dev: Optional[bool] = typer.Option(False, help="run development server"),
+    dev: bool = typer.Option(False, help="run development server"),
 ):
-    config = {"host": host, "port": port, "log_level": "info", "workers": workers}
+    config: dict[str, Any] = {"host": host, "port": port, "log_level": "info", "workers": workers}
 
     if dev:
         config.update({"log_level": "debug", "reload": True, "workers": None})
 
-    uvicorn.run("main:app", **config)
+    uvicorn.run("main:app", **config)  # type: ignore
 
 
 @app.command(
@@ -35,7 +35,7 @@ def run_dev_server(
 )
 def make_migrations(
     name: Optional[str] = typer.Option(None, help="revision name"),
-    auto_off: Optional[bool] = typer.Option(False, help="turn off --autogenerate option"),
+    auto_off: bool = typer.Option(False, help="turn off --autogenerate option"),
 ):
     command = "alembic revision"
 
@@ -60,29 +60,53 @@ def run_migrate_back():
     os.system(command)
 
 
-@app.command(name="createsuperuser", help="create super user in database", add_help_option=True)
+@app.command(name="lint", help="lint app")
+def run_app_lint():
+    os.system("mypy src")
+    os.system("flake8")
+    os.system("black app --check")
+    os.system("isort --recursive --check-only src")
+
+
+@app.command(name="format", help="format app [autoflake,black,isort]")
+def run_app_format():
+    os.system(
+        """
+        autoflake \
+        --remove-all-unused-imports \
+        --recursive \
+        --remove-unused-variables \
+        --in-place src \
+        --exclude=__init__.py
+        """
+    )
+    os.system("black src")
+    os.system("isort --recursive --apply src")
+
+
+@app.command(name="createsuperuser", help="create super user", add_help_option=True)
 def create_super_user(
-    email: Optional[str] = typer.Option(
-        "admin@example.com", help="admin email / login name", prompt=True
-    ),
-    password: Optional[str] = typer.Option(
+    email: str = typer.Option("admin@example.com", help="admin email / login name", prompt=True),
+    password: str = typer.Option(
         "admin",
         help="admin password",
         prompt=True,
         hide_input=True,
     ),
 ):
-    import db.alembic
+    from sqlalchemy.orm import Session
+
+    import db.alembic  # noqa # type: ignore
     from db.session import SessionLocal
     from user.crud import user_crud
     from user.schemas import CreateUserSchema
 
     try:
         # create session
-        session = SessionLocal()
+        session: Session = SessionLocal()
 
         # create admin model
-        admin_schema = CreateUserSchema(email=email, password=password)
+        admin_schema = CreateUserSchema(email=email, password=password)  # type: ignore
 
         # insert admin into database
         user_crud.create_admin(session, obj_in=admin_schema)

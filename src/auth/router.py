@@ -22,7 +22,7 @@ router = APIRouter()
 )
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
-):
+) -> Token:
     # auth user
     user = authenticate_user(db, form_data.username, form_data.password)
 
@@ -37,4 +37,4 @@ async def login_for_access_token(
     access_token = create_access_token(data={"sub": user.id}, expires_delta=access_token_expires)
 
     # return new token
-    return {"access_token": access_token, "token_type": "bearer"}
+    return Token(access_token=access_token, token_type="bearer")

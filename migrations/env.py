@@ -1,8 +1,4 @@
-import os
-import sys
-
-# set src as the root
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
+from __future__ import with_statement
 
 from logging.config import fileConfig
 
@@ -10,7 +6,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 # import with all models
-from db.alembic import Base
+from src.db.alembic import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
