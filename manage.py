@@ -62,10 +62,14 @@ def run_migrate_back():
 
 @app.command(name="lint", help="lint app")
 def run_app_lint():
+    print("\n[ MYPY ]\n")
     os.system("mypy src")
-    os.system("flake8")
-    os.system("black app --check")
-    os.system("isort --recursive --check-only src")
+    print("\n[ FLAKE8 ]\n")
+    os.system("flake8 -v")
+    print("\n[ BLACK ]\n")
+    os.system("black src --check")
+    print("\n[ ISORT ]\n")
+    os.system("isort --check-only --color --verbose src")
 
 
 @app.command(name="format", help="format app [autoflake,black,isort]")
@@ -96,7 +100,7 @@ def create_super_user(
 ):
     from sqlalchemy.orm import Session
 
-    import db.alembic  # noqa # type: ignore
+    import db.alembic  # noqa
     from db.session import SessionLocal
     from user.crud import user_crud
     from user.schemas import CreateUserSchema
@@ -106,7 +110,7 @@ def create_super_user(
         session: Session = SessionLocal()
 
         # create admin model
-        admin_schema = CreateUserSchema(email=email, password=password)  # type: ignore
+        admin_schema = CreateUserSchema(email=email, password=password)
 
         # insert admin into database
         user_crud.create_admin(session, obj_in=admin_schema)

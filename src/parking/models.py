@@ -31,4 +31,6 @@ class Parking(Base):
 
     # relationships
     address: Mapped["ParkingAddress"] = relationship("ParkingAddress", back_populates="parkings")
-    owner: Mapped["User"] = relationship("User", back_populates="parkings")
+    owner: Mapped["User"] = relationship(  # type: ignore # noqa: F821
+        "User", back_populates="parkings"
+    )
