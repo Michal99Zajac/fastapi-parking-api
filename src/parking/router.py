@@ -5,7 +5,7 @@ from auth.dependencies import get_current_user
 from db.dependencies import get_db
 from dependencies import PaginationQuery
 from exceptions import forbidden_exception
-from parking.schemas import CreateParkingSchema, ParkingSchema, UpdateParkingSchema
+from parking.schemas import CreateParkingSchema, ParkingSchema
 from user.models import User
 
 from .crud import parking_crud

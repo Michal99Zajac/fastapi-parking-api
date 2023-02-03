@@ -1,3 +1,4 @@
+# pyright: reportUndefinedVariable=false
 from __future__ import annotations
 
 from sqlalchemy import Column, ForeignKey, String, Table
@@ -37,10 +38,10 @@ class User(Base):
     password = Column(String(255), nullable=False)
 
     # relationships
-    roles: Mapped[list[Role]] = relationship(
+    roles: Mapped[list["Role"]] = relationship(
         "Role", secondary=users_roles, back_populates="users", cascade="all, delete"
     )
-    parkings: Mapped[list["Parking"]] = relationship(  # type: ignore
+    parkings: Mapped[list["Parking"]] = relationship(  # noqa: F821
         "Parking", back_populates="owner", cascade="all, delete"
     )
 
@@ -53,12 +54,12 @@ class Role(Base):
     description = Column(String(255))
 
     # relationships
-    users: Mapped[list[User]] = relationship(
+    users: Mapped[list["User"]] = relationship(
         "User",
         secondary=users_roles,
         back_populates="roles",
     )
-    permissions: Mapped[list[Permission]] = relationship(
+    permissions: Mapped[list["Permission"]] = relationship(
         "Permission",
         secondary=roles_permissions,
         back_populates="roles",
@@ -75,7 +76,7 @@ class Permission(Base):
     description = Column(String(1000))
 
     # relationships
-    roles: Mapped[list[Role]] = relationship(
+    roles: Mapped[list["Role"]] = relationship(
         "Role",
         secondary=roles_permissions,
         back_populates="permissions",

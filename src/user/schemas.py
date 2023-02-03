@@ -1,4 +1,4 @@
-from pydantic import UUID4, BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr
 
 
 class BaseUserSchema(BaseModel):

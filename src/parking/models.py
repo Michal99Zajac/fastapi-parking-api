@@ -1,3 +1,4 @@
+# pyright: reportUndefinedVariable=false
 from sqlalchemy import Column, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -30,4 +31,4 @@ class Parking(Base):
 
     # relationships
     address: Mapped["ParkingAddress"] = relationship("ParkingAddress", back_populates="parkings")
-    owner: Mapped["User"] = relationship("User", back_populates="parkings")  # type: ignore
+    owner: Mapped["User"] = relationship("User", back_populates="parkings")
