@@ -62,18 +62,21 @@ def run_migrate_back():
 
 @app.command(name="lint", help="lint app")
 def run_app_lint():
-    print("\n[ MYPY ]\n")
+    print("📰 MYPY")
     os.system("mypy src")
-    print("\n[ FLAKE8 ]\n")
-    os.system("flake8 -v")
-    print("\n[ BLACK ]\n")
+    print("\n✨ FLAKE8")
+    os.system("flake8")
+    print('Done!')
+    print("\n🖤 BLACK")
     os.system("black src --check")
-    print("\n[ ISORT ]\n")
-    os.system("isort --check-only --color --verbose src")
+    print("\n〽️ ISORT")
+    os.system("isort --check-only --color src")
+    print('Done!')
 
 
 @app.command(name="format", help="format app [autoflake,black,isort]")
 def run_app_format():
+    print("✨ AUTOFLAKE")
     os.system(
         """
         autoflake \
@@ -84,8 +87,12 @@ def run_app_format():
         --exclude=__init__.py
         """
     )
+    print('Done!')
+    print("\n🖤 BLACK")
     os.system("black src")
-    os.system("isort --recursive --apply src")
+    print("\n〽️ ISORT")
+    os.system("isort src")
+    print('Done!')
 
 
 @app.command(name="createsuperuser", help="create super user", add_help_option=True)
