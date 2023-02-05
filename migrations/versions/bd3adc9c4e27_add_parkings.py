@@ -5,9 +5,8 @@ Revises: eb6b4e5f1563
 Create Date: 2023-01-31 22:43:49.297238
 
 """
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "bd3adc9c4e27"
@@ -33,12 +32,8 @@ def upgrade() -> None:
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("address_id", sa.String(), nullable=False),
         sa.Column("owner_id", sa.String(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["address_id"], ["parking_addresses.id"], ondelete="SET NULL"
-        ),
-        sa.ForeignKeyConstraint(
-            ["owner_id"], ["users.id"], ondelete="CASCADE"
-        ),
+        sa.ForeignKeyConstraint(["address_id"], ["parking_addresses.id"], ondelete="SET NULL"),
+        sa.ForeignKeyConstraint(["owner_id"], ["users.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
     # ### end Alembic commands ###

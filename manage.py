@@ -19,7 +19,7 @@ def run_dev_server(
     host: str = typer.Option("localhost", help="app host", envvar="HOST"),
     workers: Optional[int] = typer.Option(None, help="multiple worker processes"),
     dev: bool = typer.Option(False, help="run development server"),
-):
+) -> None:
     config: dict[str, Any] = {"host": host, "port": port, "log_level": "info", "workers": workers}
 
     if dev:
@@ -36,7 +36,7 @@ def run_dev_server(
 def make_migrations(
     name: Optional[str] = typer.Option(None, help="revision name"),
     auto_off: bool = typer.Option(False, help="turn off --autogenerate option"),
-):
+) -> None:
     command = "alembic revision"
 
     if not auto_off:
@@ -49,50 +49,45 @@ def make_migrations(
 
 
 @app.command(name="migrate", help="run migrations", add_help_option=True)
-def run_migrate():
+def run_migrate() -> None:
     command = "alembic upgrade head"
     os.system(command)
 
 
 @app.command(name="revert", help="undo last migration", add_help_option=True)
-def run_migrate_back():
+def run_migrate_back() -> None:
     command = "alembic downgrade -1"
     os.system(command)
 
 
 @app.command(name="lint", help="lint app")
-def run_app_lint():
-    print("📰 MYPY")
-    os.system("mypy src")
-    print("\n✨ FLAKE8")
+def run_app_lint() -> None:
+    print("{:.<64}\x1b[6;30;42mDone!\x1b[0m".format("mypy"))
+    os.system("mypy --exclude=migrations . .")
+    print("{:.<64}\x1b[6;30;42mDone!\x1b[0m".format("flake8"))
     os.system("flake8")
-    print('Done!')
-    print("\n🖤 BLACK")
-    os.system("black src --check")
-    print("\n〽️ ISORT")
-    os.system("isort --check-only --color src")
-    print('Done!')
+    print("{:.<64}\x1b[6;30;42mDone!\x1b[0m".format("black"))
+    os.system("black . --check")
+    print("{:.<64}\x1b[6;30;42mDone!\x1b[0m".format("isort"))
+    os.system("isort --check-only --color .")
 
 
 @app.command(name="format", help="format app [autoflake,black,isort]")
-def run_app_format():
-    print("✨ AUTOFLAKE")
+def run_app_format() -> None:
+    print("{:.<64}\x1b[6;30;42mDone!\x1b[0m".format("autoflake"))
     os.system(
         """
         autoflake \
         --remove-all-unused-imports \
-        --recursive \
         --remove-unused-variables \
-        --in-place src \
+        --in-place \
         --exclude=__init__.py
         """
     )
-    print('Done!')
-    print("\n🖤 BLACK")
-    os.system("black src")
-    print("\n〽️ ISORT")
-    os.system("isort src")
-    print('Done!')
+    print("{:.<64}\x1b[6;30;42mDone!\x1b[0m".format("black"))
+    os.system("black .")
+    print("{:.<64}\x1b[6;30;42mDone!\x1b[0m".format("isort"))
+    os.system("isort .")
 
 
 @app.command(name="createsuperuser", help="create super user", add_help_option=True)
@@ -104,7 +99,7 @@ def create_super_user(
         prompt=True,
         hide_input=True,
     ),
-):
+) -> None:
     from sqlalchemy.orm import Session
 
     import db.alembic  # noqa
