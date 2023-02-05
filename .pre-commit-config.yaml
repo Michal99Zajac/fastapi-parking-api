@@ -41,8 +41,7 @@ repos:
         entry: mypy
         types:
           - "python"
-        args:
-          - "--exclude=migrations"
+        exclude: ^migrations/
       - id: flake8
         name: flake8
         language: python
