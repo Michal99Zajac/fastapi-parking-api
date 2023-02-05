@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to say hello
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - id: build
         uses: ./.github/templates/build
       - run: echo "Hello World!"
