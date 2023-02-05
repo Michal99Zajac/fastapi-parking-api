@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build Environment
-      uses: "./.github/template/build"
+      uses: "./.github/ci/build"
       with:
         py-version: 3.11.0
         poetry-version: 1.3.1
