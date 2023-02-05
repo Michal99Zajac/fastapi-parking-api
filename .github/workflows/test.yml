@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - id: build
-        uses: ./.github/templates/build-env
+        uses: ./.github/templates/build
       - run: echo "Hello World!"
         shell: bash
 
