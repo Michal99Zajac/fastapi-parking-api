@@ -63,7 +63,7 @@ def run_migrate_back() -> None:
 @app.command(name="lint", help="lint app")
 def run_app_lint() -> None:
     print("{:.<64}\x1b[6;30;42mDone!\x1b[0m".format("mypy"))
-    os.system("mypy --exclude=migrations . .")
+    os.system("mypy --exclude=migrations .")
     print("{:.<64}\x1b[6;30;42mDone!\x1b[0m".format("flake8"))
     os.system("flake8")
     print("{:.<64}\x1b[6;30;42mDone!\x1b[0m".format("black"))
