@@ -1,21 +1,36 @@
+on: [push]
+
+jobs:
+  hello_world_job:
+    runs-on: ubuntu-latest
+    name: A job to say hello
+    steps:
+      - uses: actions/checkout@v3
+      - id: foo
+        uses: ./.github/templates/test-composite
+        with:
+          who-to-greet: 'Mona the Octocat'
+      - run: echo random-number ${{ steps.foo.outputs.random-number }}
+        shell: bash
+
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Test Api
+# name: Test Api
 
-on:
-  - push
-  - pull_request
+# on:
+#   - push
+#   - pull_request
 
-jobs:
-  test:
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build Environment
-      uses: "./.github/ci/build"
-      with:
-        py-version: 3.11.0
-        poetry-version: 1.3.1
-    - name: Run Poetry Script
-      run: poetry run flake8
+# jobs:
+#   test:
+#     runs-on: ubuntu-22.04
+#     steps:
+#     - uses: actions/checkout@v3
+#     - name: Build Environment
+#       uses: "./.github/ci/build"
+#       with:
+#         py-version: 3.11.0
+#         poetry-version: 1.3.1
+#     - name: Run Poetry Script
+#       run: poetry run flake8
