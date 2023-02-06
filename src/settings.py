@@ -1,5 +1,19 @@
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# postgress
+POSTGRES_HOST = os.environ["POSTGRES_HOST"]
+POSTGRES_DB = os.environ["POSTGRES_DB"]
+POSTGRES_USER = os.environ["POSTGRES_USER"]
+POSTGRES_PASSWORD = os.environ["POSTGRES_PASSWORD"]
+
 # database
-SQLALCHEMY_DATABASE_URL = "sqlite:///./database.sqlite"
+SQLALCHEMY_DATABASE_URL = (
+    f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}/{POSTGRES_DB}"
+)
 
 # hashing
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+SECRET_KEY = os.environ["SECRET_KEY"]

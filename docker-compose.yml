@@ -1,0 +1,19 @@
+version: '3.1'
+services:
+  db:
+    container_name: db
+    image: postgres:15.1-alpine
+    restart: unless-stopped
+    environment:
+      PGDATA: /data/postgres
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: parking
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/data/postgres
+
+volumes:
+  db:
+    driver: local

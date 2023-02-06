@@ -1,18 +1,18 @@
-"""add parking permissions
+"""add parkings permissions
 
-Revision ID: eb6b4e5f1563
-Revises: 3bb5d9b0d27b
-Create Date: 2023-01-31 22:11:27.992691
+Revision ID: 8fb899421801
+Revises: 0316d94af553
+Create Date: 2023-02-06 23:16:23.655669
 
 """
+import sqlalchemy as sa
 from alembic import op
-from sqlalchemy import delete, orm
 
 from user.models import Permission, Role
 
 # revision identifiers, used by Alembic.
-revision = "eb6b4e5f1563"
-down_revision = "3bb5d9b0d27b"
+revision = "8fb899421801"
+down_revision = "0316d94af553"
 branch_labels = None
 depends_on = None
 
@@ -26,7 +26,7 @@ permissions = {
 
 def upgrade() -> None:
     bind = op.get_bind()
-    session = orm.Session(bind=bind)
+    session = sa.orm.Session(bind=bind)
 
     # get roles
     admin_role: Role = session.query(Role).filter(Role.name == "admin").first()
@@ -54,8 +54,8 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     bind = op.get_bind()
-    session = orm.Session(bind=bind)
-    statement = delete(Permission).where(Permission.name.in_(permissions.keys()))
+    session = sa.orm.Session(bind=bind)
+    statement = sa.delete(Permission).where(Permission.name.in_(permissions.keys()))
     print(statement)
     session.execute(statement)
     session.commit()
