@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import UUID4, BaseModel
 
 from user.schemas import UserSchema
 
@@ -21,7 +21,7 @@ class ParkingAddressUpdateSchema(ParkingAddressBaseSchema):
 
 
 class ParkingAddressInDB(ParkingAddressBaseSchema):
-    id: str
+    id: UUID4
 
     class Config:
         orm_mode = True
@@ -48,7 +48,7 @@ class UpdateParkingSchema(ParkingBaseSchema):
 
 
 class ParkingInDBSchema(ParkingBaseSchema):
-    id: str
+    id: UUID4
     address: ParkingAddressSchema
     owner: UserSchema
 

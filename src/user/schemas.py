@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import UUID4, BaseModel, EmailStr
 
 
 class BaseUserSchema(BaseModel):
@@ -14,7 +14,7 @@ class UpdateUserSchema(BaseUserSchema):
 
 
 class BaseUserInDB(BaseUserSchema):
-    id: str
+    id: UUID4
 
     class Config:
         orm_mode = True

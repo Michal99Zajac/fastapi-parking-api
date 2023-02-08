@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Literal
+from typing import Literal, Union
 
 from jose import jwt
 from sqlalchemy.orm import Session
@@ -12,7 +12,7 @@ from .cryptography import verify_password
 from .settings import HASH_ALGORITHM
 
 
-def authenticate_user(db: Session, email: str, password: str) -> Literal[False] | User:
+def authenticate_user(db: Session, email: str, password: str) -> Union[Literal[False], User]:
     user = user_crud.get_by_email(db, email=email)
 
     # check if user exists

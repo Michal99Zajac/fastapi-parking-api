@@ -1,8 +1,9 @@
-from typing import Any, Callable, Coroutine
+from typing import Any, Callable, Coroutine, Union
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
+from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from db.dependencies import get_db
@@ -25,7 +26,7 @@ async def get_current_user(
     try:
         # decode token
         payload = jwt.decode(token, SECRET_KEY, algorithms=[HASH_ALGORITHM])
-        id: str | None = payload.get("sub")
+        id: Union[UUID4, None] = payload.get("sub")
 
         # token doesn't have encoded user id
         if id is None:
