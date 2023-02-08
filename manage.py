@@ -80,7 +80,7 @@ def run_app_format() -> None:
         autoflake \
         --remove-all-unused-imports \
         --remove-unused-variables \
-        --in-place \
+        --in-place . \
         --exclude=__init__.py
         """
     )

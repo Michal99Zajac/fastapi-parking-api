@@ -44,6 +44,9 @@ class User(Base):
     parkings: Mapped[list["Parking"]] = relationship(  # type: ignore  # noqa: F821
         "Parking", back_populates="owner", cascade="all, delete"
     )
+    bookings: Mapped[list["Booking"]] = relationship(  # type: ignore  # noqa: F821
+        "Booking", back_populates="booker", cascade="all, delete"
+    )
 
 
 class Role(Base):

@@ -9,7 +9,7 @@ repos:
         language: python
         language_version: 3.11.0
         verbose: true
-        entry: sh -c 'autoflake "$@"; git add -u' --
+        entry: sh -c 'autoflake "$@"' --
         args:
           - "--in-place"
           - "--remove-all-unused-imports"
@@ -22,7 +22,7 @@ repos:
         language: python
         language_version: 3.11.0
         verbose: true
-        entry: sh -c 'isort "$@"; git add -u' --
+        entry: sh -c 'isort "$@"' --
         types:
           - "python"
       - id: black
@@ -30,7 +30,7 @@ repos:
         language: python
         language_version: 3.11.0
         verbose: true
-        entry: sh -c 'black "$@"; git add -u' --
+        entry: sh -c 'black "$@"' --
         types:
           - "python"
       - id: mypy
