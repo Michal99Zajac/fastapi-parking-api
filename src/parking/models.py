@@ -18,7 +18,7 @@ class ParkingAddress(Base):
     country = Column(String(100), nullable=False)
 
     # relationships
-    parkings: Mapped[list["Parking"]] = relationship("Parking", back_populates="address")
+    parkings: Mapped[list["Parking"]] = relationship(back_populates="address")
 
 
 class Parking(Base):
@@ -34,13 +34,9 @@ class Parking(Base):
     )
 
     # relationships
-    address: Mapped[Optional["ParkingAddress"]] = relationship(
-        "ParkingAddress", back_populates="parkings"
-    )
-    owner: Mapped["User"] = relationship(  # type: ignore # noqa: F821
-        "User", back_populates="parkings"
-    )
-    spaces: Mapped[list["ParkingSpace"]] = relationship("ParkingSpace", back_populates="parking")
+    address: Mapped["ParkingAddress"] = relationship(back_populates="parkings")
+    owner: Mapped["User"] = relationship(back_populates="parkings")  # type: ignore # noqa: F821
+    spaces: Mapped[list["ParkingSpace"]] = relationship(back_populates="parking")
 
 
 class ParkingSpace(Base):
@@ -54,5 +50,5 @@ class ParkingSpace(Base):
     )
 
     # relationships
-    parking: Mapped["Parking"] = relationship("Parking", back_populates="spaces")
-    bookings: Mapped[list["Booking"]] = relationship("Booking", back_populates="parking_space")  # type: ignore  # noqa: F821
+    parking: Mapped["Parking"] = relationship(back_populates="spaces")
+    bookings: Mapped[list["Booking"]] = relationship(back_populates="parking_space")  # type: ignore  # noqa: F821

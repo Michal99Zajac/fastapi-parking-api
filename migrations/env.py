@@ -12,7 +12,7 @@ from sqlalchemy import engine_from_config, pool
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 
 # import with all models
-from db.alembic import Base  # noqa: E402
+from db.models import Base  # noqa: E402
 from settings import SQLALCHEMY_DATABASE_URL
 
 # this is the Alembic Config object, which provides

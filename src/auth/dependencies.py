@@ -7,10 +7,10 @@ from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from db.dependencies import get_db
+from db.models import User
 from exceptions import forbidden_exception
 from settings import SECRET_KEY
 from user.crud import user_crud
-from user.models import User
 from user.tools import pick_out_permissions
 
 from .exceptions import unauthhorized_exception

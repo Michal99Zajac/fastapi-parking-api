@@ -6,12 +6,12 @@ from auth.cryptography import verify_password
 from auth.dependencies import required_permission
 from auth.exceptions import invalid_password_exception
 from db.dependencies import get_db
+from db.models import User
 from dependencies import PaginationQuery
 from exceptions import not_found_exception
 from user.tools import pick_out_permissions
 
 from .crud import user_crud
-from .models import User
 from .schemas import CreateUserSchema, UpdateUserSchema, UserSchema
 
 router = APIRouter()

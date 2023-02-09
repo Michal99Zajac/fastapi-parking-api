@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 
 from auth.cryptography import hash_password
 from crud import CRUD
+from db.models import Role, User
 
-from .models import Role, User
 from .schemas import CreateUserSchema, UpdateUserSchema
 
 

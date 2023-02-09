@@ -102,7 +102,7 @@ def create_super_user(
 ) -> None:
     from sqlalchemy.orm import Session
 
-    import db.alembic  # noqa
+    import db.models  # noqa
     from db.session import SessionLocal
     from user.crud import user_crud
     from user.schemas import CreateUserSchema

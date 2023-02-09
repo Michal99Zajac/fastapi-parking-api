@@ -2,8 +2,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from crud import CRUD
-from parking.models import Parking, ParkingAddress
-from user.models import User
+from db.models import Parking, ParkingAddress, User
 
 from .schemas import CreateParkingSchema, UpdateParkingSchema
 

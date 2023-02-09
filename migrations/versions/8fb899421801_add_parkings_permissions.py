@@ -8,7 +8,7 @@ Create Date: 2023-02-06 23:16:23.655669
 import sqlalchemy as sa
 from alembic import op
 
-from user.models import Permission, Role
+from db.models import Permission, Role
 
 # revision identifiers, used by Alembic.
 revision = "8fb899421801"

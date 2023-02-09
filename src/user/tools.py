@@ -1,4 +1,4 @@
-from .models import User
+from db.models import User
 
 
 def pick_out_permissions(user: User) -> list[str]:

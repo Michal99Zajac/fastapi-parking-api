@@ -39,13 +39,15 @@ class User(Base):
 
     # relationships
     roles: Mapped[list["Role"]] = relationship(
-        "Role", secondary=users_roles, back_populates="users", cascade="all, delete"
+        secondary=users_roles,
+        back_populates="users",
+        cascade="all, delete",
     )
     parkings: Mapped[list["Parking"]] = relationship(  # type: ignore  # noqa: F821
-        "Parking", back_populates="owner", cascade="all, delete"
+        back_populates="owner", cascade="all, delete"
     )
     bookings: Mapped[list["Booking"]] = relationship(  # type: ignore  # noqa: F821
-        "Booking", back_populates="booker", cascade="all, delete"
+        back_populates="booker", cascade="all, delete"
     )
 
 
@@ -58,12 +60,10 @@ class Role(Base):
 
     # relationships
     users: Mapped[list["User"]] = relationship(
-        "User",
         secondary=users_roles,
         back_populates="roles",
     )
     permissions: Mapped[list["Permission"]] = relationship(
-        "Permission",
         secondary=roles_permissions,
         back_populates="roles",
         cascade="all, delete",
@@ -80,7 +80,6 @@ class Permission(Base):
 
     # relationships
     roles: Mapped[list["Role"]] = relationship(
-        "Role",
         secondary=roles_permissions,
         back_populates="permissions",
         cascade="all, delete",

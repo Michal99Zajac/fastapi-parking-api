@@ -4,9 +4,9 @@ from typing import Literal, Union
 from jose import jwt
 from sqlalchemy.orm import Session
 
+from db.models import User
 from settings import SECRET_KEY
 from user.crud import user_crud
-from user.models import User
 
 from .cryptography import verify_password
 from .settings import HASH_ALGORITHM
