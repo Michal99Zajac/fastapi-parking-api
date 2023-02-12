@@ -4,16 +4,23 @@ from auth.cryptography import hash_password
 from crud import CRUD
 from db.models import Role, User
 
+from .exceptions import RoleDoesntExistException, UserAlreadyExistsException
 from .schemas import CreateUserSchema, UpdateUserSchema
 
 
 class UserCRUD(CRUD[User, CreateUserSchema, UpdateUserSchema]):
     def create(self, db: Session, *, obj_in: CreateUserSchema) -> User:
+        # check if user exists
+        user = self.get_by_email(db, email=obj_in.email)
+        if user:
+            raise UserAlreadyExistsException()
+
+        # get user role
         user_role = db.query(Role).filter(Role.name == "user").first()
 
         # check if role exists
         if not user_role:
-            raise Exception("[UserCRUD] Error: role doesn't exist")
+            raise RoleDoesntExistException()
 
         # hash password
         hashed_password = hash_password(obj_in.password)

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from auth.dependencies import AuthGuard
@@ -6,6 +6,7 @@ from db.dependencies import get_db
 from dependencies import PaginationQuery
 from exceptions import not_found_exception
 from user.crud import user_crud
+from user.exceptions import RoleDoesntExistException, UserAlreadyExistsException
 from user.schemas import CreateUserSchema, UpdatePasswordSchema, UpdateUserSchema, UserSchema
 
 router = APIRouter(prefix="/users")
@@ -28,16 +29,20 @@ async def get_users(
 
 @router.post(
     "/",
-    response_model=str,
+    response_model=UserSchema,
     dependencies=[Depends(AuthGuard(admin=True))],
     status_code=status.HTTP_201_CREATED,
 )
-async def create_user(user: CreateUserSchema, db: Session = Depends(get_db)) -> str:
+async def create_user(body: CreateUserSchema, db: Session = Depends(get_db)) -> UserSchema:
     """
     Create new user in database
     """
-    user_crud.create(db, obj_in=user)
-    return "User has been created"
+
+    try:
+        new_user = user_crud.create(db, obj_in=body)
+    except (RoleDoesntExistException, UserAlreadyExistsException) as error:
+        raise HTTPException(status_code=error.status, detail=error.message)
+    return new_user
 
 
 @router.get(
