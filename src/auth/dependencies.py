@@ -1,4 +1,4 @@
-from typing import Any, Callable, Coroutine, Union
+from typing import Union
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
@@ -47,42 +47,13 @@ async def get_current_user(
     return user
 
 
-def required_permission(permissions: list[str]) -> Callable[[User], Coroutine[Any, Any, User]]:
-    """return a dependency with a check of the given permissions
+class AuthGuard:
+    """
+    Authorization guard
 
-    Args:
-        permissions (list[str]): required permissions
+    Class allows to check if user is an admin or has required permissions.
     """
 
-    async def check_permissions(user: User = Depends(get_current_user)) -> User:
-        # pick out the permissions
-        user_permissions = pick_out_permissions(user)
-
-        # check if user has all required permissions
-        allow_to_pass = all([permission in user_permissions for permission in permissions])
-
-        # forbidden if user doesn't have all permissions
-        if not allow_to_pass:
-            raise forbidden_exception()
-
-        # return the user
-        return user
-
-    return check_permissions
-
-
-async def only_admin(user: User = Depends(get_current_user)) -> User:
-    # chisel out roles
-    roles_names = map(lambda role: role.name, user.roles)
-
-    # check if user has admin role
-    if "admin" not in roles_names:
-        raise forbidden_exception()
-
-    return user
-
-
-class AuthGuard:
     def __init__(self, permissions: list[str] = [], *, admin: bool = False) -> None:
         self.permissions = permissions
         self.admin = admin

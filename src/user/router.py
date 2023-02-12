@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from auth.cryptography import verify_password
-from auth.dependencies import required_permission
+from auth.dependencies import AuthGuard
 from auth.exceptions import invalid_password_exception
 from db.dependencies import get_db
 from db.models import User
@@ -16,19 +16,11 @@ from .schemas import CreateUserSchema, UpdateUserSchema, UserSchema
 
 router = APIRouter()
 
-# permissions
-read_me_permission = required_permission(["me:read"])
-update_me_permission = required_permission(["me:read", "me:update"])
-delete_me_permission = required_permission(["me:delete", "me:read"])
-read_user_permission = required_permission(["user:read"])
-delete_user_permission = required_permission(["user:read", "user:delete"])
-update_user_permission = required_permission(["user:read", "user:update"])
-
 
 @router.get(
     "/",
     response_model=list[UserSchema],
-    dependencies=[Depends(read_user_permission)],
+    dependencies=[Depends(AuthGuard(["user:read"]))],
     status_code=status.HTTP_200_OK,
 )
 async def get_users(
@@ -56,7 +48,7 @@ async def create_user(create_user: CreateUserSchema, db: Session = Depends(get_d
 @router.get(
     "/me/", response_model=UserSchema, status_code=status.HTTP_200_OK, name="Get current user"
 )
-async def get_me(user: User = Depends(read_me_permission)) -> UserSchema:
+async def get_me(user: User = Depends(AuthGuard(["user:read"]))) -> UserSchema:
     return user
 
 
@@ -66,7 +58,7 @@ async def get_me(user: User = Depends(read_me_permission)) -> UserSchema:
 async def update_me(
     user_in: UpdateUserSchema,
     db: Session = Depends(get_db),
-    user: User = Depends(update_me_permission),
+    user: User = Depends(AuthGuard(["user:read", "user:update"])),
 ) -> UserSchema:
     # update user
     updated_user = user_crud.update(db, db_obj=user, obj_in=user_in)
@@ -78,7 +70,9 @@ async def update_me(
     "/me/", response_model=str, status_code=status.HTTP_200_OK, name="Delete current user"
 )
 async def delete_me(
-    password: str, user: User = Depends(delete_me_permission), db: Session = Depends(get_db)
+    password: str,
+    user: User = Depends(AuthGuard(["user:read", "user:delete"])),
+    db: Session = Depends(get_db),
 ) -> str:
     # verify password
     verified = verify_password(password, user.password)
@@ -99,7 +93,9 @@ async def delete_me(
     name="Update current user password",
 )
 async def update_password(
-    password: str, user: User = Depends(update_user_permission), db: Session = Depends(get_db)
+    password: str,
+    user: User = Depends(AuthGuard(["user:read", "user:update"])),
+    db: Session = Depends(get_db),
 ) -> str:
     user_crud.update_password(db, db_obj=user, new_password=password)
     return "Password has been updated"
@@ -111,14 +107,14 @@ async def update_password(
     name="Get authenticated user permissions",
     status_code=status.HTTP_200_OK,
 )
-async def get_user_permissions(user: User = Depends(read_me_permission)) -> list[str]:
+async def get_user_permissions(user: User = Depends(AuthGuard(["user:read"]))) -> list[str]:
     return pick_out_permissions(user)
 
 
 @router.get(
     "/{user_id}/",
     response_model=UserSchema,
-    dependencies=[Depends(read_user_permission)],
+    dependencies=[Depends(AuthGuard(["user:read"]))],
     status_code=status.HTTP_200_OK,
 )
 async def get_user(user_id: str, db: Session = Depends(get_db)) -> UserSchema:
@@ -135,7 +131,7 @@ async def get_user(user_id: str, db: Session = Depends(get_db)) -> UserSchema:
 @router.delete(
     "/{user_id}/",
     response_model=str,
-    dependencies=[Depends(delete_user_permission)],
+    dependencies=[Depends(AuthGuard(["user:read", "user:delete"]))],
     status_code=status.HTTP_200_OK,
 )
 async def delete_user(user_id: str, db: Session = Depends(get_db)) -> str:
@@ -152,7 +148,7 @@ async def delete_user(user_id: str, db: Session = Depends(get_db)) -> str:
 @router.put(
     "/{user_id}/",
     response_model=UserSchema,
-    dependencies=[Depends(update_user_permission)],
+    dependencies=[Depends(AuthGuard(["user:read", "user:update"]))],
     status_code=status.HTTP_200_OK,
 )
 async def update_user(
