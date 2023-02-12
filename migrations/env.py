@@ -13,7 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 
 # import with all models
 from db.models import Base  # noqa: E402
-from settings import SQLALCHEMY_DATABASE_URL
+from settings import SQLALCHEMY_DATABASE_URL  # noqa: E402
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

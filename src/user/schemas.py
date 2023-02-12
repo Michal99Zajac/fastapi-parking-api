@@ -1,12 +1,16 @@
-from pydantic import UUID4, BaseModel, EmailStr
+from pydantic import UUID4, BaseModel, EmailStr, Field
 
 
 class BaseUserSchema(BaseModel):
     email: EmailStr
 
 
+class UpdatePasswordSchema(BaseModel):
+    password: str = Field(max_length=255)
+
+
 class CreateUserSchema(BaseUserSchema):
-    password: str
+    password: str = Field(max_length=255)
 
 
 class UpdateUserSchema(BaseUserSchema):
