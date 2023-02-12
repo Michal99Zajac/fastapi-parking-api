@@ -6,12 +6,12 @@ from jose import JWTError, jwt
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
-from db.dependencies import get_db
-from db.models import User
-from exceptions import forbidden_exception
-from settings import SECRET_KEY
-from user.crud import user_crud
-from user.tools import pick_out_permissions
+from src.db.dependencies import get_db
+from src.db.models import User
+from src.exceptions import forbidden_exception
+from src.settings import SECRET_KEY
+from src.user.crud import user_crud
+from src.user.tools import pick_out_permissions
 
 from .exceptions import unauthhorized_exception
 from .schemas import TokenData
@@ -79,7 +79,7 @@ class AuthGuard:
         Check if user is an admin
         """
         # get user role names
-        roles_names = map(lambda role: role.name, user.roles)
+        roles_names = map(lambda role: str(role.name), user.roles)
 
         # check if admin
         return "admin" in roles_names

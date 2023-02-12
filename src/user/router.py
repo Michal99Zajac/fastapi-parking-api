@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from auth.cryptography import verify_password
-from auth.dependencies import AuthGuard
-from auth.exceptions import invalid_password_exception
-from db.dependencies import get_db
-from db.models import User
-from user.tools import pick_out_permissions
+from src.auth.cryptography import verify_password
+from src.auth.dependencies import AuthGuard
+from src.auth.exceptions import invalid_password_exception
+from src.db.dependencies import get_db
+from src.db.models import User
+from src.user.tools import pick_out_permissions
 
 from .crud import user_crud
 from .exceptions import RoleDoesntExistException, UserAlreadyExistsException
@@ -18,7 +18,7 @@ router = APIRouter()
 @router.get(
     "/me/", response_model=UserSchema, status_code=status.HTTP_200_OK, name="Get current user"
 )
-async def get_current_user(user: User = Depends(AuthGuard(["user:read"]))) -> UserSchema:
+async def get_current_user(user: User = Depends(AuthGuard(["user:read"]))) -> User:
     """
     Get current user informations
     """
@@ -32,7 +32,7 @@ async def update_current_user(
     user_in: UpdateUserSchema,
     db: Session = Depends(get_db),
     user: User = Depends(AuthGuard(["user:read", "user:update"])),
-) -> UserSchema:
+) -> User:
     """
     Update current user without password
     """
@@ -51,7 +51,7 @@ async def delete_current_user(
     Delete current user
     """
     # verify password
-    verified = verify_password(password, user.password)
+    verified = verify_password(password, str(user.password))
 
     # forbidden if password is not correct
     if not verified:
@@ -93,7 +93,7 @@ async def get_current_user_permissions(user: User = Depends(AuthGuard(["user:rea
 
 
 @router.post("/register/", response_model=UserSchema, status_code=status.HTTP_200_OK)
-async def register_new_user(body: CreateUserSchema, db: Session = Depends(get_db)) -> UserSchema:
+async def register_new_user(body: CreateUserSchema, db: Session = Depends(get_db)) -> User:
     """
     Register new user in app
     """

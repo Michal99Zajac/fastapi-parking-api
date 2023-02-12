@@ -4,8 +4,7 @@ from __future__ import annotations
 from sqlalchemy import Column, ForeignKey, String, Table
 from sqlalchemy.orm import Mapped, relationship
 
-from db.base import Base
-from db.tools import uuid_column
+from src.db.base import Base
 
 users_roles = Table(
     "users_roles",
@@ -33,7 +32,6 @@ roles_permissions = Table(
 class User(Base):
     __tablename__ = "users"
 
-    id = uuid_column()
     email = Column(String(255), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
 
@@ -54,7 +52,6 @@ class User(Base):
 class Role(Base):
     __tablename__ = "roles"
 
-    id = uuid_column()
     name = Column(String(100), unique=True, nullable=False)
     description = Column(String(255))
 
@@ -74,7 +71,6 @@ class Role(Base):
 class Permission(Base):
     __tablename__ = "permissions"
 
-    id = uuid_column()
     name = Column(String(100), unique=True)
     description = Column(String(1000))
 

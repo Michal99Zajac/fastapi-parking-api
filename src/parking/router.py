@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, status
+from pydantic import UUID4
 from sqlalchemy.orm import Session
 
-from auth.dependencies import get_current_user
-from db.dependencies import get_db
-from db.models import User
-from dependencies import PaginationQuery
-from exceptions import forbidden_exception
-from parking.schemas import CreateParkingSchema, ParkingSchema
+from src.auth.dependencies import get_current_user
+from src.db.dependencies import get_db
+from src.db.models import Parking, User
+from src.dependencies import PaginationQuery
+from src.exceptions import forbidden_exception
+from src.parking.schemas import CreateParkingSchema, ParkingSchema
 
 from .crud import parking_crud
 
@@ -18,7 +19,7 @@ async def get_all_parkings(
     pagination: PaginationQuery = Depends(),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-) -> list[ParkingSchema]:
+) -> list[Parking]:
     """Get all user parkings"""
     parkings = parking_crud.get_multi_by_owner(
         db, page=pagination.page, limit=pagination.limit, owner_id=current_user.id
@@ -40,7 +41,7 @@ async def create_parking(
 @router.get("/{parking_id}/", response_model=ParkingSchema, status_code=status.HTTP_200_OK)
 async def get_parking(
     parking_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
-) -> ParkingSchema:
+) -> Parking:
     parking = parking_crud.get_by_owner(db, parking_id=parking_id, owner_id=current_user.id)
 
     if not parking:
@@ -53,7 +54,7 @@ async def get_parking(
 
 @router.delete("/{parking_id}/", response_model=str, status_code=status.HTTP_200_OK)
 async def delete_parking(
-    parking_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+    parking_id: UUID4, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ) -> str:
     # find parking
     parking = parking_crud.get_by_owner(db, parking_id=parking_id, owner_id=current_user.id)

@@ -1,12 +1,8 @@
 import os
-import sys
 from typing import Any, Optional
 
 import typer
 import uvicorn
-
-# run script from the src directory
-sys.path.append("src")
 
 # init typer
 app = typer.Typer()
@@ -24,7 +20,7 @@ def run_dev_server(
     if dev:
         config.update({"log_level": "debug", "reload": True, "workers": None})
 
-    uvicorn.run("main:app", **config)  # type: ignore
+    uvicorn.run("src.main:app", **config)  # type: ignore
 
 
 @app.command(
@@ -79,8 +75,10 @@ def run_app_format() -> None:
         autoflake \
         --remove-all-unused-imports \
         --remove-unused-variables \
-        --in-place . \
-        --exclude=__init__.py
+        --in-place \
+        --recursive \
+        --exclude=__init__.py \
+        ./src
         """
     )
     print("{:.<64}\x1b[6;30;42mDone!\x1b[0m".format("black"))
@@ -101,10 +99,9 @@ def create_super_user(
 ) -> None:
     from sqlalchemy.orm import Session
 
-    import db.models  # noqa
-    from db.session import SessionLocal
-    from user.crud import user_crud
-    from user.schemas import CreateUserSchema
+    from src.db.session import SessionLocal
+    from src.user.crud import user_crud
+    from src.user.schemas import CreateUserSchema
 
     try:
         # create session

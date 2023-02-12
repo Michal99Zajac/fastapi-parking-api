@@ -1,19 +1,12 @@
-# isort: skip_file
 from __future__ import with_statement
-import os
-import sys
 
 from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-# set src as the root
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
-
-# import with all models
-from db.models import Base  # noqa: E402
-from settings import SQLALCHEMY_DATABASE_URL  # noqa: E402
+from src.db.models import Base
+from src.settings import SQLALCHEMY_DATABASE_URL
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

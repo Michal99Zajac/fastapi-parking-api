@@ -1,15 +1,15 @@
 from sqlalchemy.orm import Session
 
-from auth.cryptography import hash_password
-from crud import CRUD
-from db.models import Role, User
+from src.auth.cryptography import hash_password
+from src.crud import CRUD
+from src.db.models import Role, User
 
 from .exceptions import RoleDoesntExistException, UserAlreadyExistsException
 from .schemas import CreateUserSchema, UpdateUserSchema
 
 
 class UserCRUD(CRUD[User, CreateUserSchema, UpdateUserSchema]):
-    def create(self, db: Session, *, obj_in: CreateUserSchema) -> User:
+    def create(self, db: Session, *, obj_in: CreateUserSchema) -> User:  # type: ignore[override]
         # check if user exists
         user = self.get_by_email(db, email=obj_in.email)
         if user:

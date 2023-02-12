@@ -1,8 +1,8 @@
-"""add parkings permissions
+"""add permissions for parkings and bookings
 
-Revision ID: 8fb899421801
-Revises: 0316d94af553
-Create Date: 2023-02-06 23:16:23.655669
+Revision ID: ca96caf84131
+Revises: c18e73c205d7
+Create Date: 2023-02-12 19:20:22.538153
 
 """
 import sqlalchemy as sa
@@ -11,16 +11,16 @@ from alembic import op
 from src.db.models import Permission, Role
 
 # revision identifiers, used by Alembic.
-revision = "8fb899421801"
-down_revision = "0316d94af553"
+revision = "ca96caf84131"
+down_revision = "c18e73c205d7"
 branch_labels = None
 depends_on = None
 
 permissions = {
-    "parking:read": None,
-    "parking:delete": None,
-    "parking:update": None,
-    "parking:create": None,
+    "booking:read": None,
+    "booking:delete": None,
+    "booking:update": None,
+    "booking:create": None,
 }
 
 
@@ -34,10 +34,10 @@ def upgrade() -> None:
 
     # create permissions
     permissions = {
-        "parking:read": Permission(name="parking:read"),
-        "parking:delete": Permission(name="parking:delete"),
-        "parking:update": Permission(name="parking:update"),
-        "parking:create": Permission(name="parking:create"),
+        "booking:read": Permission(name="booking:read"),
+        "booking:delete": Permission(name="booking:delete"),
+        "booking:update": Permission(name="booking:update"),
+        "booking:create": Permission(name="booking:create"),
     }
 
     # add permissions the admin and user

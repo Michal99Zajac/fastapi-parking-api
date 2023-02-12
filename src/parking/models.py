@@ -4,14 +4,12 @@ from typing import Optional
 from sqlalchemy import UUID, Column, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from db.base import Base
-from db.tools import uuid_column
+from src.db.base import Base
 
 
 class ParkingAddress(Base):
     __tablename__ = "parking_addresses"
 
-    id: Mapped[UUID] = uuid_column()
     street = Column(String(100), nullable=False)
     zip_code = Column(String(20), nullable=False)
     city = Column(String(100), nullable=False)
@@ -24,7 +22,6 @@ class ParkingAddress(Base):
 class Parking(Base):
     __tablename__ = "parkings"
 
-    id: Mapped[UUID] = uuid_column()
     name = Column(String, nullable=False)
     address_id: Mapped[Optional[UUID]] = mapped_column(
         ForeignKey("parking_addresses.id", ondelete="SET NULL"), nullable=True
@@ -42,7 +39,6 @@ class Parking(Base):
 class ParkingSpace(Base):
     __tablename__ = "parking_spaces"
 
-    id = uuid_column()
     name = Column(String(100), nullable=False)
     description = Column(String(200), nullable=True)
     parking_id: Mapped[UUID] = mapped_column(

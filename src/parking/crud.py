@@ -1,15 +1,17 @@
+from typing import Any
+
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
-from crud import CRUD
-from db.models import Parking, ParkingAddress, User
+from src.crud import CRUD
+from src.db.models import Parking, ParkingAddress, User
 
 from .schemas import CreateParkingSchema, UpdateParkingSchema
 
 
 class ParkingCRUD(CRUD[Parking, CreateParkingSchema, UpdateParkingSchema]):
     def get_multi_by_owner(
-        self, db: Session, *, owner_id: str, limit: int = 50, page: int = 0
+        self, db: Session, *, owner_id: Any, limit: int = 50, page: int = 0
     ) -> list[Parking]:
         return (
             db.query(self.model)
@@ -19,14 +21,14 @@ class ParkingCRUD(CRUD[Parking, CreateParkingSchema, UpdateParkingSchema]):
             .all()
         )
 
-    def get_by_owner(self, db: Session, *, owner_id: str, parking_id: str) -> Parking | None:
+    def get_by_owner(self, db: Session, *, owner_id: Any, parking_id: Any) -> Parking | None:
         return (
             db.query(self.model)
             .filter(self.model.owner_id == owner_id and self.model.id == parking_id)
             .first()
         )
 
-    def create(self, db: Session, *, obj_in: CreateParkingSchema, user: User) -> Parking:
+    def create(self, db: Session, *, obj_in: CreateParkingSchema, user: User) -> Parking:  # type: ignore[override]
         obj_in_data = jsonable_encoder(obj_in)  # transfer data to dict
 
         # create address model object

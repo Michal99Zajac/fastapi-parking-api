@@ -4,9 +4,9 @@ from typing import Literal, Union
 from jose import jwt
 from sqlalchemy.orm import Session
 
-from db.models import User
-from settings import SECRET_KEY
-from user.crud import user_crud
+from src.db.models import User
+from src.settings import SECRET_KEY
+from src.user.crud import user_crud
 
 from .cryptography import verify_password
 from .settings import HASH_ALGORITHM
@@ -20,7 +20,7 @@ def authenticate_user(db: Session, email: str, password: str) -> Union[Literal[F
         return False
 
     # verify password
-    if not verify_password(password, user.password):
+    if not verify_password(password, str(user.password)):
         return False
 
     # user is authenticated, return user

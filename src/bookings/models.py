@@ -1,16 +1,12 @@
-# pyright: reportUndefinedVariable=false
-
 from sqlalchemy import UUID, Column, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from db.base import Base
-from db.tools import uuid_column
+from src.db.base import Base
 
 
 class Booking(Base):
     __tablename__ = "bookings"
 
-    id = uuid_column()
     start = Column(DateTime, nullable=False)
     end = Column(DateTime, nullable=False)
     booker_id: Mapped[UUID] = mapped_column(

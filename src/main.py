@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 
-from admin.router import router as admin_router
-from auth.router import router as auth_router
-from parking.router import router as parking_router
-from user.router import router as user_router
+from .admin.router import router as admin_router
+from .auth.router import router as auth_router
+from .parking.router import router as parking_router
+from .user.router import router as user_router
 
 app = FastAPI()
 

@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from auth.dependencies import AuthGuard
-from db.dependencies import get_db
-from dependencies import PaginationQuery
-from exceptions import not_found_exception
-from user.crud import user_crud
-from user.exceptions import RoleDoesntExistException, UserAlreadyExistsException
-from user.schemas import CreateUserSchema, UpdatePasswordSchema, UpdateUserSchema, UserSchema
+from src.auth.dependencies import AuthGuard
+from src.db.dependencies import get_db
+from src.db.models import User
+from src.dependencies import PaginationQuery
+from src.exceptions import not_found_exception
+from src.user.crud import user_crud
+from src.user.exceptions import RoleDoesntExistException, UserAlreadyExistsException
+from src.user.schemas import CreateUserSchema, UpdatePasswordSchema, UpdateUserSchema, UserSchema
 
 router = APIRouter(prefix="/users")
 
@@ -20,7 +21,7 @@ router = APIRouter(prefix="/users")
 )
 async def get_users(
     pagination: PaginationQuery = Depends(), db: Session = Depends(get_db)
-) -> list[UserSchema]:
+) -> list[User]:
     """
     Get all users in database
     """
@@ -33,7 +34,7 @@ async def get_users(
     dependencies=[Depends(AuthGuard(admin=True))],
     status_code=status.HTTP_201_CREATED,
 )
-async def create_user(body: CreateUserSchema, db: Session = Depends(get_db)) -> UserSchema:
+async def create_user(body: CreateUserSchema, db: Session = Depends(get_db)) -> User:
     """
     Create new user in database
     """
@@ -51,7 +52,7 @@ async def create_user(body: CreateUserSchema, db: Session = Depends(get_db)) -> 
     dependencies=[Depends(AuthGuard(admin=True))],
     status_code=status.HTTP_200_OK,
 )
-async def get_user(user_id: str, db: Session = Depends(get_db)) -> UserSchema:
+async def get_user(user_id: str, db: Session = Depends(get_db)) -> User:
     """
     Get specific user
     """
@@ -85,7 +86,7 @@ async def delete_user(user_id: str, db: Session = Depends(get_db)) -> str:
 )
 async def update_user(
     user_id: str, user_in: UpdateUserSchema, db: Session = Depends(get_db)
-) -> UserSchema:
+) -> User:
     """
     Update user data without password
     """

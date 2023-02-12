@@ -1,6 +1,6 @@
 from pydantic import UUID4, BaseModel
 
-from user.schemas import UserSchema
+from src.user.schemas import UserSchema
 
 # PARKING ADDRESS SCHEMA
 
