@@ -80,3 +80,47 @@ async def only_admin(user: User = Depends(get_current_user)) -> User:
         raise forbidden_exception()
 
     return user
+
+
+class AuthGuard:
+    def __init__(self, permissions: list[str] = [], *, admin: bool = False) -> None:
+        self.permissions = permissions
+        self.admin = admin
+
+    def __call__(self, current_user: User = Depends(get_current_user)) -> User:
+        if self.admin:
+            # check if user is admin
+            if self._is_admin(current_user):
+                # return the current user
+                return current_user
+
+            raise forbidden_exception()
+
+        # forbidden if user doesn't have all permissions
+        if not self._is_authorized(current_user):
+            raise forbidden_exception()
+
+        # return the current user
+        return current_user
+
+    def _is_admin(self, user: User) -> bool:
+        """
+        Check if user is an admin
+        """
+        # get user role names
+        roles_names = map(lambda role: role.name, user.roles)
+
+        # check if admin
+        return "admin" in roles_names
+
+    def _is_authorized(self, user: User) -> bool:
+        """
+        Check if user is authorized.
+        """
+        # pick out the permissions
+        user_permissions = pick_out_permissions(user)
+
+        # check if user has all required permissions
+        authorized = all([permission in user_permissions for permission in self.permissions])
+
+        return authorized

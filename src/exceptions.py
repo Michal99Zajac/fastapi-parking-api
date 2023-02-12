@@ -8,7 +8,7 @@ def not_found_exception() -> HTTPException:
     )
 
 
-def forbidden_exception(detail: str) -> HTTPException:
+def forbidden_exception(detail: str = "") -> HTTPException:
     return HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
         detail=detail if detail else "Access to resources forbidden",

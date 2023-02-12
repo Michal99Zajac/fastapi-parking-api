@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
+from auth.dependencies import AuthGuard
 from db.dependencies import get_db
 from dependencies import PaginationQuery
 from exceptions import not_found_exception
@@ -10,7 +11,12 @@ from user.schemas import CreateUserSchema, UpdateUserSchema, UserSchema
 router = APIRouter(prefix="/users")
 
 
-@router.get("/", response_model=list[UserSchema], status_code=status.HTTP_200_OK)
+@router.get(
+    "/",
+    response_model=list[UserSchema],
+    dependencies=[Depends(AuthGuard(admin=True))],
+    status_code=status.HTTP_200_OK,
+)
 async def get_users(
     pagination: PaginationQuery = Depends(), db: Session = Depends(get_db)
 ) -> list[UserSchema]:
