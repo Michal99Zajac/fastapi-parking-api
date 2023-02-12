@@ -1,13 +1,12 @@
+import os
 import sys
+from typing import Any, Optional
+
+import typer
+import uvicorn
 
 # run script from the src directory
 sys.path.append("src")
-
-import os  # noqa: E402
-from typing import Any, Optional  # noqa: E402
-
-import typer  # noqa: E402
-import uvicorn  # noqa: E402
 
 # init typer
 app = typer.Typer()
